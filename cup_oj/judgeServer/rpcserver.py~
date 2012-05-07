@@ -1,0 +1,8 @@
+#!/usr/bin/python
+# encoding=utf8
+"""
+远程过程调用
+
+这个模块用来产生judge服务器端的rpc服务器，主要包括两个类，collector和
+dispatcher，其中
+"""
