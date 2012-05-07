@@ -1,7 +1,7 @@
 from warnings import warn
 from django.core.exceptions import ImproperlyConfigured
 from django.utils.importlib import import_module
-from cup_oj.auth.signals import user_logged_in, user_logged_out
+from sdust_oj.auth.signals import user_logged_in, user_logged_out
 
 SESSION_KEY = '_auth_user_id'
 BACKEND_SESSION_KEY = '_auth_user_backend'

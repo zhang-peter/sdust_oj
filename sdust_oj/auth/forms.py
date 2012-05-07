@@ -6,9 +6,9 @@ from django.utils.http import int_to_base36
 from django.utils.safestring import mark_safe
 from django.utils.translation import ugettext, ugettext_lazy as _
 
-from cup_oj.auth import authenticate
-from cup_oj.auth.models import User
-from cup_oj.sa_conn import Session
+from sdust_oj.auth import authenticate
+from sdust_oj.auth.models import User
+from sdust_oj.sa_conn import Session
 from django.contrib.auth.hashers import UNUSABLE_PASSWORD, is_password_usable, get_hasher
 from django.contrib.auth.tokens import default_token_generator
 from django.contrib.sites.models import get_current_site

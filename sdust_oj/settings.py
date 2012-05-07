@@ -1,4 +1,4 @@
-# Django settings for cup_oj project.
+# Django settings for sdust_oj project.
 
 import os
 ROOT_PATH = os.path.dirname(__file__)
@@ -99,11 +99,11 @@ MIDDLEWARE_CLASSES = (
     'django.middleware.common.CommonMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
-    'cup_oj.auth.middleware.AuthenticationMiddleware',
+    'sdust_oj.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
 )
 
-ROOT_URLCONF = 'cup_oj.urls'
+ROOT_URLCONF = 'sdust_oj.urls'
 
 TEMPLATE_DIRS = (
     # Put strings here, like "/home/html/django_templates" or "C:/www/django/templates".
@@ -144,5 +144,5 @@ LOGGING = {
 }
 
 AUTHENTICATION_BACKENDS = (
-    'cup_oj.auth.backends.SABackend',
+    'sdust_oj.auth.backends.SABackend',
 )

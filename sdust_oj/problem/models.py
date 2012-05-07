@@ -1,7 +1,7 @@
 from sqlalchemy import *
 from sqlalchemy.orm import relation
 
-from cup_oj.sa_conn import DeclarativeBase, metadata, Session
+from sdust_oj.sa_conn import DeclarativeBase, metadata, Session
 
 problemCCGC = Table(u'problemCCGC', metadata,
     Column(u'problem_id', INTEGER(), ForeignKey('Problem.id'), primary_key=True, nullable=False),

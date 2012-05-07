@@ -1,11 +1,11 @@
-from cup_oj.auth.models import User
-from cup_oj.sa_conn import Session
+from sdust_oj.auth.models import User
+from sdust_oj.sa_conn import Session
 
-from cup_oj.auth.hashers import make_password
+from sdust_oj.auth.hashers import make_password
 
 class SABackend(object):
     """
-    Authenticates against cup_oj.models.User.
+    Authenticates against sdust_oj.models.User.
     """
     
     supports_inactive_user = True

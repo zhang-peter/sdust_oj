@@ -2,7 +2,7 @@
 # This URLs file is used to provide a reliable view deployment for test purposes.
 # It is also provided as a convenience to those who want to deploy these URLs
 # elsewhere.
-from cup_oj.auth.views import *
+from sdust_oj.auth.views import *
 
 from django.conf.urls import patterns, url
 

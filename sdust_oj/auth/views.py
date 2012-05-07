@@ -14,9 +14,9 @@ from django.template import RequestContext
 from django.core.urlresolvers import reverse
 
 # Avoid shadowing the login() and logout() views below.
-from cup_oj.auth import REDIRECT_FIELD_NAME, login as auth_login, logout as auth_logout
+from sdust_oj.auth import REDIRECT_FIELD_NAME, login as auth_login, logout as auth_logout
 from django.contrib.auth.decorators import login_required
-from cup_oj.auth.forms import AuthenticationForm, PasswordResetForm, SetPasswordForm, PasswordChangeForm, UserCreationForm
+from sdust_oj.auth.forms import AuthenticationForm, PasswordResetForm, SetPasswordForm, PasswordChangeForm, UserCreationForm
 from django.contrib.auth.models import User
 from django.contrib.auth.tokens import default_token_generator
 from django.contrib.sites.models import get_current_site

@@ -1,8 +1,8 @@
 from sqlalchemy import *
 from sqlalchemy.orm import relation
 
-from cup_oj.auth.hashers import make_password, check_password
-from cup_oj.sa_conn import DeclarativeBase, metadata, Session
+from sdust_oj.auth.hashers import make_password, check_password
+from sdust_oj.sa_conn import DeclarativeBase, metadata, Session
 
 permissionGroup = Table(u'permissionGroup', metadata,
     Column(u'permission_id', INTEGER(), ForeignKey('Permission.id'), primary_key=True, nullable=False),
@@ -92,7 +92,7 @@ class User(DeclarativeBase):
             session.close()
         return check_password(raw_password, self.password, setter)
 
-from cup_oj.auth.signals import user_logged_in
+from sdust_oj.auth.signals import user_logged_in
 from django.utils import timezone
 
 def update_last_login(sender, user, **kwargs):
