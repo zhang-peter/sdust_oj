@@ -171,9 +171,10 @@ class OutputCheckConfigForm(forms.Form):
         
         return  output_check_config
 
+from sdust_oj.constant import judge_flows
 class ProblemMetaForm(forms.Form):
     title = forms.CharField(label=_('title'), max_length = 254)
-    judge_flow = forms.CharField(label=_('judge_flow'), max_length = 254)
+    judge_flow = forms.MultipleChoiceField(label=_('judge_flow'), choices=judge_flows)
     
     class Meta:
         model = ProblemMeta
@@ -181,8 +182,12 @@ class ProblemMetaForm(forms.Form):
     def save(self, commit=True):
         problem_meta = ProblemMeta()
         problem_meta.title = self.cleaned_data['title']
-        problem_meta.judge_flow = self.cleaned_data['judge_flow']
-        
+        job_list = self.cleaned_data['judge_flow']
+        flow_mark = ""
+        for job in job_list:
+            flow_mark += "$" + str(job)
+            
+        problem_meta.judge_flow = flow_mark
         session = Session()
         session.add(problem_meta)
         session.commit()

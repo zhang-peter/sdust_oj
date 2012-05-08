@@ -2,7 +2,9 @@ from sdust_oj.problem.views import *
 from django.conf.urls import patterns, url
 from sdust_oj.problem.forms import *
 
-urlpatterns = patterns('',    
+urlpatterns = patterns('', 
+    url(r'^$', problem_index, name="problem_index"),
+    url(r'^meta_list/page/(?P<page>\d{,10})/$', meta_list, name="meta_list"),   
     url(r'^compilable_code_generation_config_upload/$', form_upload ,{'uploadForm':CompilableCodeGenerationConfigForm}, name='compilable_code_generation_config_upload'),
     url(r'^compile_config_upload/$', form_upload, {'uploadForm':CompileConfigForm}, name='compile_config_upload'),
     url(r'^description_upload/$', form_upload, {'uploadForm':DescriptionForm}, name='description_upload'),

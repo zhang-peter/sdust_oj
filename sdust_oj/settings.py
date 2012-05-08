@@ -146,3 +146,5 @@ LOGGING = {
 AUTHENTICATION_BACKENDS = (
     'sdust_oj.auth.backends.SABackend',
 )
+
+METAS_PER_PAGE = 20
