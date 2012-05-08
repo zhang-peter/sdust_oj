@@ -21,7 +21,7 @@ class Permission(DeclarativeBase):
 
     #column definitions
     id = Column(u'id', INTEGER(), primary_key=True, nullable=False)
-    name = Column(u'name', INTEGER())
+    name = Column(u'name', VARCHAR(length=254), nullable=False)
 
     #relation definitions
     TGroups = relation('TgRoup', primaryjoin='Permission.id==permissionGroup.c.permission_id', secondary=permissionGroup, secondaryjoin='permissionGroup.c.group_id==TgRoup.id')
@@ -34,7 +34,7 @@ class TgRoup(DeclarativeBase):
 
     #column definitions
     id = Column(u'id', INTEGER(), primary_key=True, nullable=False)
-    name = Column(u'name', INTEGER())
+    name = Column(u'name', VARCHAR(length=254), nullable=False)
 
     #relation definitions
     Permissions = relation('Permission', primaryjoin='TgRoup.id==permissionGroup.c.group_id', secondary=permissionGroup, secondaryjoin='permissionGroup.c.permission_id==Permission.id')
@@ -91,22 +91,7 @@ class User(DeclarativeBase):
             session.commit()
             session.close()
         return check_password(raw_password, self.password, setter)
-
-from sdust_oj.auth.signals import user_logged_in
-from django.utils import timezone
-
-def update_last_login(sender, user, **kwargs):
-    """
-    A signal receiver which updates the last_login date for
-    the user logging in.
-    """
-    user.last_login = timezone.now()
-    session = Session()
-    session.merge(user)
-    session.commit()
-    session.close()
-user_logged_in.connect(update_last_login)
-
+    
 class AnonymousUser(object):
     id = None
     username = ''

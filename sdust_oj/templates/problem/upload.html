@@ -1,0 +1,16 @@
+{% extends "problem/base.html" %}
+
+{% block content %}
+	<div class = "problem_meta_upload">
+
+	<form enctype = "multipart/form-data" method="post" action = "." name = "problem_meta_upload">
+
+	{% csrf_token%}
+	{{form.as_p}}	
+	<br>
+	<br>
+	<input name = "submit" value = "提交" type = "submit" />
+	&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+    <input name="reset" value="清空" type="reset">
+</div>
+{% endblock %} 

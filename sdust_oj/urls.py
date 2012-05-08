@@ -5,5 +5,6 @@ urlpatterns = patterns('',
     # url(r'^$', 'sdust_oj.views.home', name='home'),
     # url(r'^sdust_oj/', include('sdust_oj.foo.urls')),
     url(r'^auth/', include('sdust_oj.auth.urls')),
+    url(r'^problem/', include('sdust_oj.problem.urls')),
     url(r'^test/', test_view, name="test_view"),
 )

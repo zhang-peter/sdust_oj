@@ -168,7 +168,7 @@ class ProblemMeta(DeclarativeBase):
     #column definitions
     id = Column(u'id', INTEGER(), primary_key=True, nullable=False)
     judge_flow = Column(u'judge_flow', VARCHAR(length=254))
-    title = Column(u'title', VARCHAR(length=254))
+    title = Column(u'title', VARCHAR(length=254), nullable=False)
 
     #relation definitions
 
@@ -197,7 +197,6 @@ class Submission(DeclarativeBase):
 
     #column definitions
     id = Column(u'id', INTEGER(), primary_key=True, nullable=False)
-    problem_id = Column(u'problem_id', INTEGER())
     status = Column(u'status', INTEGER())
     sub_time = Column(u'sub_time', DATETIME())
     used_memory = Column(u'used_memory', INTEGER())
