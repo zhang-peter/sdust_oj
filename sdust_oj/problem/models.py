@@ -208,3 +208,5 @@ class Submission(DeclarativeBase):
     #relation definitions
     User = relation('User', primaryjoin='Submission.user_id==User.id')
     Problem = relation('Problem', primaryjoin='Submission.problem_id==Problem.id')
+    
+metadata.create_all()
