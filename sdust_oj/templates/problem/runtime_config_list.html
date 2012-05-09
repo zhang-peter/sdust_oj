@@ -1,0 +1,9 @@
+               <div>
+                    <h2>Runtime Config List</h2>
+                    <a href="{% url run_config_upload %}">Add</a>
+                    <ol>
+                    {% for run_c in runtime_configs %}
+                        <li><a href="" >code type:{{ run_c.code_type }} memory:{{ cc.memory }} time:{{ cc.time }} </a></li>
+                    {% endfor %}
+                    </ol>
+               </div>

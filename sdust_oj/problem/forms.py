@@ -171,10 +171,14 @@ class OutputCheckConfigForm(forms.Form):
         
         return  output_check_config
 
-from sdust_oj.constant import judge_flows
+from sdust_oj.constant import judge_flows, JUDGE_FLOW_MARK_SEPARATOR
 class ProblemMetaForm(forms.Form):
     title = forms.CharField(label=_('title'), max_length = 254)
-    judge_flow = forms.MultipleChoiceField(label=_('judge_flow'), choices=judge_flows)
+    judge_flow = forms.MultipleChoiceField(label=_('judge_flow'), choices=())
+    
+    def __init__(self, *args, **kwargs):
+        super(ProblemMetaForm, self).__init__(*args, **kwargs)
+        self.fields['judge_flow'].choices = [(f[0], f[1]) for f in judge_flows]
     
     class Meta:
         model = ProblemMeta
@@ -185,7 +189,7 @@ class ProblemMetaForm(forms.Form):
         job_list = self.cleaned_data['judge_flow']
         flow_mark = ""
         for job in job_list:
-            flow_mark += "$" + str(job)
+            flow_mark += JUDGE_FLOW_MARK_SEPARATOR + str(job)
             
         problem_meta.judge_flow = flow_mark
         session = Session()
@@ -205,6 +209,7 @@ class ProblemForm(forms.Form):
         super(ProblemForm, self).__init__(*args, **kwargs)
         session = Session()
         self.fields['problem_meta_id'].choices = [('', '----------')] + [(pm.id, pm.title) for pm in session.query(ProblemMeta).all()]
+        session.close()
          
     def save(self, commit=True):
         problem = Problem()

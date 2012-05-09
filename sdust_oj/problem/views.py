@@ -2,6 +2,7 @@ from django.shortcuts import render_to_response
 from django.core.urlresolvers import reverse
 from django.http import HttpResponseRedirect
 from django.template import RequestContext
+from django.http import Http404
 from sdust_oj.problem.models import ProblemMeta
 from sdust_oj.sa_conn import Session
 from django.core.paginator import Paginator, InvalidPage, EmptyPage
@@ -22,6 +23,24 @@ def meta_list(request, page=1):
     except (EmptyPage, InvalidPage):
         metas = paginator.page(paginator.num_pages)
     return render_to_response('problem/meta_list.html', {"metas": metas})
+
+def meta_detail(request, meta_id):
+    session = Session()
+    meta = session.query(ProblemMeta).get(meta_id)
+    if meta is None:
+        raise Http404
+    descriptions = meta.descriptions    
+    
+    data = {"meta": meta,
+            "descriptions": descriptions}
+    
+    for config_refer in meta.get_config_refer():
+        if hasattr(meta, config_refer):
+            data.update({config_refer: getattr(meta, config_refer)})
+            
+    session.close()
+    
+    return render_to_response('problem/meta_detail.html', data)
 
 def submit_success(request):
     return render_to_response('problem/submit_success.html')

@@ -1,5 +1,7 @@
+# coding=utf8
+
 from sqlalchemy import *
-from sqlalchemy.orm import relation
+from sqlalchemy.orm import relation, relationship
 
 from sdust_oj.sa_conn import DeclarativeBase, metadata, Session
 
@@ -160,6 +162,9 @@ class Problem(DeclarativeBase):
     RunConfigs = relation('RunConfig', primaryjoin='Problem.id==problemRunConfig.c.problem_id', secondary=problemRunConfig, secondaryjoin='problemRunConfig.c.runconfig_id==RunConfig.id')
 
 
+from sdust_oj.constant import JUDGE_FLOW_MARK_SEPARATOR, judge_flows,\
+JUDGE_FLOW_TEMPLATES_PATH
+
 class ProblemMeta(DeclarativeBase):
     __tablename__ = 'ProblemMeta'
 
@@ -171,7 +176,59 @@ class ProblemMeta(DeclarativeBase):
     title = Column(u'title', VARCHAR(length=254), nullable=False)
 
     #relation definitions
+    descriptions = relationship("Description", backref="problem_meta")
+    compile_configs = relationship("CompileConfig", backref="problem_meta")
+    runtime_configs = relationship("RunConfig", backref="problem_meta")
+    output_check_configs = relationship("OutputCheckConfig", backref="problem_meta")
+    
+    def get_judge_flow(self):
+        """
+        返回列表
+        """
+        judge_id_str = str(self.judge_flow)
+        judge_id_strs = judge_id_str.split(JUDGE_FLOW_MARK_SEPARATOR)
+        judge_flow_str = []
+        for judge_id_str in judge_id_strs:
+            try:
+                judge_id = int(judge_id_str)
+            except ValueError:
+                continue
+            
+            for f in judge_flows:
+                if f[0] == judge_id:
+                    judge_flow_str.append(f[1])
+        return judge_flow_str
+    
+    def get_config_list_template(self):
+        judge_id_str = str(self.judge_flow)
+        judge_id_strs = judge_id_str.split(JUDGE_FLOW_MARK_SEPARATOR)
+        config_list_templates = []
+        for judge_id_str in judge_id_strs:
+            try:
+                judge_id = int(judge_id_str)
+            except ValueError:
+                continue
+            
+            for f in judge_flows:
+                if f[0] == judge_id:
+                    config_list_templates.append(JUDGE_FLOW_TEMPLATES_PATH + f[2])
+        return config_list_templates
 
+
+    def get_config_refer(self):
+        judge_id_str = str(self.judge_flow)
+        judge_id_strs = judge_id_str.split(JUDGE_FLOW_MARK_SEPARATOR)
+        configs_refer = []
+        for judge_id_str in judge_id_strs:
+            try:
+                judge_id = int(judge_id_str)
+            except ValueError:
+                continue
+            
+            for f in judge_flows:
+                if f[0] == judge_id:
+                    configs_refer.append(f[3])
+        return configs_refer
 
 class RunConfig(DeclarativeBase):
     __tablename__ = 'RunConfig'
