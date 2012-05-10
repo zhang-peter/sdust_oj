@@ -1,9 +1,24 @@
                <div>
                     <h2>Compile Config List</h2>
-                    <a href="{% url compile_config_upload %}">Add</a>
-                    <ol>
+                    <a href="{% url compile_config_add  meta.id %}">Add</a>
+                    
+                    <table>
+                        <tr>
+                            <td>编号</td>
+                            <td>代码类型</td>
+                            <td>编译命令</td>
+                            <td></td>
+                            <td></td>
+                        </tr>
                     {% for cc in compile_configs %}
-                        <li><a href="" >code_type:{{ cc.code_type }} compile configuration:{{ cc.config }}</a></li>
+                        <tr>
+                            <td>{{ cc.id }}</td>
+                            <td>{{ cc.code_type }}</td>
+                            <td>{{ cc.config }}</td>
+                            <td><a href="">编辑</a></td>
+                            <td><a href="">删除</a></td>
+                        </tr>
                     {% endfor %}
-                    </ol>
+                    </table>
+                    
                </div>

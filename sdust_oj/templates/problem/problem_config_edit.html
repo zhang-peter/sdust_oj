@@ -5,7 +5,7 @@
         <!-- Always force latest IE rendering engine (even in intranet) & Chrome Frame
         Remove this if you use the .htaccess -->
         <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
-        <title>meta_detail</title>
+        <title>Problem Config Edit</title>
         <meta name="description" content="" />
         <meta name="author" content="jingyong" />
         <meta name="viewport" content="width=device-width; initial-scale=1.0" />
@@ -16,7 +16,7 @@
     <body>
         <div>
             <header>
-                <h1>meta_detail</h1>
+                <h1>Problem Config Edit</h1>
             </header>
             <nav>
                 <p>
@@ -28,27 +28,23 @@
             </nav>
             <div>
 					<div>
-                   <h1>Title: {{ meta.title }}</h1>
-						Judge Flow: {% for flow_str in meta.get_judge_flow %} {{ flow_str }} {% endfor %}
-					</div>
-					
-					<div>
-					   <a href="{% url problem_add meta.id %}">Make A Problem</a>
+						Judge Flow: {% for flow_str in problem.get_judge_flow %} {{ flow_str }} {% endfor %}
 					</div>
 
                <div>
                     <h2>Descriptions</h2>
-                    <a href="{% url description_add meta.id %}">Add</a>
                     
                     <table>
                         <tr>
+                            <td></td>
                             <td>编号</td>
                             <td>标题</td>
                             <td></td>
                             <td></td>
                         </tr>
-                    {% for desc in descriptions %}
+                    {% for desc in meta_descs %}
                         <tr>
+                            <td><input type="radio" name="desc_id" value="{{ desc.id }}" checked="checked" /> </td>
                             <td>{{ desc.id }}</td>
                             <td><a href="">{{ desc.title }}</a></td>
                             <td><a href="">编辑</a></td>

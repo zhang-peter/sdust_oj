@@ -11,12 +11,7 @@ class CompilableCodeGenerationConfigForm(forms.Form):
     
     class Meta:
         model = CompilableCodeGenerationConfig
-            
-    def __init__(self, *args, **kwargs):
-        super(CompilableCodeGenerationConfigForm, self).__init__(*args, **kwargs)
-        session = Session()
-        self.fields['problem_meta_id'].choices = [('', '----------')] + [(pm.id, pm.title) for pm in session.query(ProblemMeta).all()]
-        
+                   
     def save(self, commit=True):
         compilable_code_generation_config = CompilableCodeGenerationConfig() 
         compilable_code_generation_config.problem_meta_id = self.cleaned_data['problem_meta_id']       
@@ -42,7 +37,7 @@ class CompileConfigForm(forms.Form):
     def __init__(self, *args, **kwargs):
         super(CompileConfigForm, self).__init__(*args, **kwargs)
         session = Session()
-        self.fields['problem_meta_id'].choices = [('', '----------')] + [(pm.id, pm.title) for pm in session.query(ProblemMeta).all()]
+        self.fields['problem_meta_id'].choices = [(pm.id, pm.title) for pm in session.query(ProblemMeta).all()]
         
     def save(self, commit=True):
         compile_config = CompileConfig() 
@@ -74,7 +69,7 @@ class DescriptionForm(forms.Form):
     def __init__(self, *args, **kwargs):
         super(DescriptionForm, self).__init__(*args, **kwargs)
         session = Session()
-        self.fields['problem_meta_id'].choices = [('', '----------')] + [(pm.id, pm.title) for pm in session.query(ProblemMeta).all()]
+        self.fields['problem_meta_id'].choices = [(pm.id, pm.title) for pm in session.query(ProblemMeta).all()]
         
     def save(self, commit=True):
         description = Description() 
@@ -95,9 +90,14 @@ class DescriptionForm(forms.Form):
         
         return  description
 
+from sdust_oj.utils import save_io_file
+
 class InputOutputDataForm(forms.Form):   
     problem_meta_id = forms.ChoiceField(label=_('problem_meta_id'), choices = ()) 
-    name = forms.CharField(label=_("name"), max_length = 254)    
+    name = forms.CharField(label=_("name"), max_length = 254)
+    input_file = forms.FileField(label=_("input_file"), allow_empty_file=True)
+    output_file = forms.FileField(label=_("output_file"), allow_empty_file=True)
+
 
     class Meta:
         model = InputOutputData
@@ -105,19 +105,34 @@ class InputOutputDataForm(forms.Form):
     def __init__(self, *args, **kwargs):
         super(InputOutputDataForm, self).__init__(*args, **kwargs)
         session = Session()
-        self.fields['problem_meta_id'].choices = [('', '----------')] + [(pm.id, pm.title) for pm in session.query(ProblemMeta).all()]
+        self.fields['problem_meta_id'].choices = [(pm.id, pm.title) for pm in session.query(ProblemMeta).all()]
+        
+    def clean_input_file(self):
+        input_file = self.cleaned_data['input_file']
+        return self.check_file(input_file)
+         
+    def clean_output_file(self):
+        output_file = self.cleaned_data['output_file']
+        return self.check_file(output_file)
+    
+    def check_file(self, f):
+        if f.size > 1024 * 1024 * 50:
+            raise forms.ValidationError(_("File size should not be larger than 50MB!"))
         
     def save(self, commit=True):
         input_output_data = InputOutputData() 
         input_output_data.problem_meta_id = self.cleaned_data['problem_meta_id']       
-        input_output_data.name = self.cleaned_data['name']   
+        input_output_data.name = self.cleaned_data['name']
+        input_file = self.cleaned_data['input_file']
+        output_file = self.cleaned_data['output_file']
         
         session = Session()
         session.add(input_output_data)
-        session.commit()
+        session.commit()        
+        save_io_file(input_file, output_file, input_output_data)
         session.close()
         
-        return  input_output_data
+        return input_output_data
         
 class KeywordCheckConfigForm(forms.Form):    
     problem_meta_id = forms.ChoiceField(label=_('problem_meta_id'), choices = ())
@@ -130,7 +145,7 @@ class KeywordCheckConfigForm(forms.Form):
     def __init__(self, *args, **kwargs):
         super(KeywordCheckConfigForm, self).__init__(*args, **kwargs)
         session = Session()
-        self.fields['problem_meta_id'].choices = [('', '----------')] + [(pm.id, pm.title) for pm in session.query(ProblemMeta).all()]
+        self.fields['problem_meta_id'].choices = [(pm.id, pm.title) for pm in session.query(ProblemMeta).all()]
         
     def save(self, commit=True):
         keyword_check_config = KeywordCheckConfig()
@@ -157,7 +172,7 @@ class OutputCheckConfigForm(forms.Form):
     def __init__(self, *args, **kwargs):
         super(OutputCheckConfigForm, self).__init__(*args, **kwargs)
         session = Session()
-        self.fields['problem_meta_id'].choices = [('', '----------')] + [(pm.id, pm.title) for pm in session.query(ProblemMeta).all()]
+        self.fields['problem_meta_id'].choices = [(pm.id, pm.title) for pm in session.query(ProblemMeta).all()]
         
     def save(self, commit=True):
         output_check_config = OutputCheckConfig() 
@@ -201,22 +216,40 @@ class ProblemMetaForm(forms.Form):
         
 class ProblemForm(forms.Form):
     problem_meta_id = forms.ChoiceField(label=_('problem_meta_id'), choices = ())
-    judge_flow = forms.CharField(label=_('judge_flow'), max_length = 254)
+    judge_flow = forms.MultipleChoiceField(label=_('judge_flow'), choices=())
     
     class Meta:
         model = Problem
     def __init__(self, *args, **kwargs):
         super(ProblemForm, self).__init__(*args, **kwargs)
         session = Session()
-        self.fields['problem_meta_id'].choices = [('', '----------')] + [(pm.id, pm.title) for pm in session.query(ProblemMeta).all()]
+        self.fields['problem_meta_id'].choices = [(pm.id, pm.title) for pm in session.query(ProblemMeta).all()]
+        try:
+            meta_id = int(args[0]["problem_meta_id"])
+        except IndexError:
+            meta_id = int(kwargs["initial"]["problem_meta_id"])
+        
+        current_meta = session.query(ProblemMeta).get(meta_id)
+        choices = []
+        meta_flows = str(current_meta.judge_flow).split(JUDGE_FLOW_MARK_SEPARATOR)
+        for f in judge_flows:
+            if str(f[0]) in meta_flows:
+                choices.append((f[0], f[1]))
+        self.fields['judge_flow'].choices = choices
+        
         session.close()
          
     def save(self, commit=True):
         problem = Problem()
         problem.problem_meta_id = self.cleaned_data['problem_meta_id']
-        problem.judge_flow = self.cleaned_data['judge_flow']
-        
+        job_list = self.cleaned_data['judge_flow']
+        flow_mark = ""
+        for job in job_list:
+            flow_mark += JUDGE_FLOW_MARK_SEPARATOR + str(job)
+            
+        problem.judge_flow = flow_mark
         session = Session()
+        session.expire_on_commit = False
         session.add(problem)
         session.commit()
         session.close()
@@ -235,7 +268,7 @@ class RunConfigForm(forms.Form):
     def __init__(self, *args, **kwargs):
         super(RunConfigForm, self).__init__(*args, **kwargs)
         session = Session()
-        self.fields['problem_meta_id'].choices = [('', '----------')] + [(pm.id, pm.title) for pm in session.query(ProblemMeta).all()]
+        self.fields['problem_meta_id'].choices = [(pm.id, pm.title) for pm in session.query(ProblemMeta).all()]
         
     def save(self, commit=True):
         run_config = RunConfig() 

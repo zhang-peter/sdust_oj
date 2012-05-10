@@ -148,3 +148,5 @@ AUTHENTICATION_BACKENDS = (
 )
 
 METAS_PER_PAGE = 20
+
+JUDGE_ROOT = os.path.join(ROOT_PATH, "judge_root")

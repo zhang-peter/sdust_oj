@@ -15,11 +15,6 @@ problemCompileConfig = Table(u'problemCompileConfig', metadata,
     Column(u'compileconfig_id', INTEGER(), ForeignKey('CompileConfig.id'), primary_key=True, nullable=False),
 )
 
-problemDescription = Table(u'problemDescription', metadata,
-    Column(u'description_id', INTEGER(), ForeignKey('Description.id'), primary_key=True, nullable=False),
-    Column(u'problem_id', INTEGER(), ForeignKey('Problem.id'), primary_key=True, nullable=False),
-)
-
 problemIOData = Table(u'problemIOData', metadata,
     Column(u'problem_id', INTEGER(), ForeignKey('Problem.id'), primary_key=True, nullable=False),
     Column(u'io_id', INTEGER(), ForeignKey('InputOutputData.id'), primary_key=True, nullable=False),
@@ -90,10 +85,10 @@ class Description(DeclarativeBase):
     source = Column(u'source', VARCHAR(length=254))
     title = Column(u'title', VARCHAR(length=254))
 
+    problems = relationship('Problem', backref="description")
+
     #relation definitions
     ProblemMeta = relation('ProblemMeta', primaryjoin='Description.problem_meta_id==ProblemMeta.id')
-    Problems = relation('Problem', primaryjoin='Description.id==problemDescription.c.description_id', secondary=problemDescription, secondaryjoin='problemDescription.c.problem_id==Problem.id')
-
 
 class InputOutputData(DeclarativeBase):
     __tablename__ = 'InputOutputData'
@@ -150,21 +145,26 @@ class Problem(DeclarativeBase):
     id = Column(u'id', INTEGER(), primary_key=True, nullable=False)
     judge_flow = Column(u'judge_flow', VARCHAR(length=254))
     problem_meta_id = Column(u'problem_meta_id', INTEGER(), ForeignKey('ProblemMeta.id'))
+    description_id = Column(u'description_id', INTEGER(), ForeignKey('Description.id'))
 
     #relation definitions
     ProblemMeta = relation('ProblemMeta', primaryjoin='Problem.problem_meta_id==ProblemMeta.id')
     CompilableCodeGenerationConfigs = relation('CompilableCodeGenerationConfig', primaryjoin='Problem.id==problemCCGC.c.problem_id', secondary=problemCCGC, secondaryjoin='problemCCGC.c.ccgc_id==CompilableCodeGenerationConfig.id')
     CompileConfigs = relation('CompileConfig', primaryjoin='Problem.id==problemCompileConfig.c.problem_id', secondary=problemCompileConfig, secondaryjoin='problemCompileConfig.c.compileconfig_id==CompileConfig.id')
-    Descriptions = relation('Description', primaryjoin='Problem.id==problemDescription.c.problem_id', secondary=problemDescription, secondaryjoin='problemDescription.c.description_id==Description.id')
     InputOutputDatas = relation('InputOutputData', primaryjoin='Problem.id==problemIOData.c.problem_id', secondary=problemIOData, secondaryjoin='problemIOData.c.io_id==InputOutputData.id')
     KeywordCheckConfigs = relation('KeywordCheckConfig', primaryjoin='Problem.id==problemKeywordCheckConfig.c.problem_id', secondary=problemKeywordCheckConfig, secondaryjoin='problemKeywordCheckConfig.c.keyconfig_id==KeywordCheckConfig.id')
     OutputCheckConfigs = relation('OutputCheckConfig', primaryjoin='Problem.id==problemOutputCheckConfig.c.problem_id', secondary=problemOutputCheckConfig, secondaryjoin='problemOutputCheckConfig.c.outputcheck_id==OutputCheckConfig.id')
     RunConfigs = relation('RunConfig', primaryjoin='Problem.id==problemRunConfig.c.problem_id', secondary=problemRunConfig, secondaryjoin='problemRunConfig.c.runconfig_id==RunConfig.id')
 
+    def get_judge_flow(self):
+        """
+        返回列表
+        """
+        return get_judge_flow_name(self.judge_flow)
 
 from sdust_oj.constant import JUDGE_FLOW_MARK_SEPARATOR, judge_flows,\
 JUDGE_FLOW_TEMPLATES_PATH
-
+from sdust_oj.utils import get_judge_flow_name
 class ProblemMeta(DeclarativeBase):
     __tablename__ = 'ProblemMeta'
 
@@ -180,24 +180,13 @@ class ProblemMeta(DeclarativeBase):
     compile_configs = relationship("CompileConfig", backref="problem_meta")
     runtime_configs = relationship("RunConfig", backref="problem_meta")
     output_check_configs = relationship("OutputCheckConfig", backref="problem_meta")
+    input_output_datas = relationship("InputOutputData", backref="problem_meta")
     
     def get_judge_flow(self):
         """
         返回列表
         """
-        judge_id_str = str(self.judge_flow)
-        judge_id_strs = judge_id_str.split(JUDGE_FLOW_MARK_SEPARATOR)
-        judge_flow_str = []
-        for judge_id_str in judge_id_strs:
-            try:
-                judge_id = int(judge_id_str)
-            except ValueError:
-                continue
-            
-            for f in judge_flows:
-                if f[0] == judge_id:
-                    judge_flow_str.append(f[1])
-        return judge_flow_str
+        return get_judge_flow_name(self.judge_flow)
     
     def get_config_list_template(self):
         judge_id_str = str(self.judge_flow)

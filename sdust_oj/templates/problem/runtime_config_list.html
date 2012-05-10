@@ -1,9 +1,24 @@
                <div>
                     <h2>Runtime Config List</h2>
-                    <a href="{% url run_config_upload %}">Add</a>
-                    <ol>
+                    <a href="{% url run_config_add meta.id %}">Add</a>
+                    <table>
+                        <tr>
+                            <td>编号</td>
+                            <td>代码类型</td>
+                            <td>内存限制（KB）</td>
+                            <td>时间限制（ms）</td>
+                            <td></td>
+                            <td></td>
+                        </tr>
                     {% for run_c in runtime_configs %}
-                        <li><a href="" >code type:{{ run_c.code_type }} memory:{{ cc.memory }} time:{{ cc.time }} </a></li>
+                        <tr>
+                            <td>{{ run_c.id }}</td>
+                            <td>{{ run_c.code_type }}</td>
+                            <td>{{ run_c.memory }}</td>
+                            <td>{{ run_c.time }}
+                            <td><a href="">编辑</a></td>
+                            <td><a href="">删除</a></td>
+                        </tr>
                     {% endfor %}
-                    </ol>
+                    </table>
                </div>
