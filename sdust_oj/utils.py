@@ -35,3 +35,29 @@ def get_judge_flow_name(flow_with_sp):
         if str(f[0]) in judge_id_strs:
             judge_flow_str.append(f[1])
     return judge_flow_str
+
+from django.core.exceptions import ImproperlyConfigured
+from django.utils.importlib import import_module
+def get_model_by_model_ref(ref):
+    model_name = ""
+    for f in judge_flows:
+        if f[3] == ref:
+            model_name = f[4]
+            break
+    try:
+        mod = import_module("sdust_oj.problem.models")
+    except ImportError, e:
+        raise ImproperlyConfigured('Error importing problem model sdust_oj.problem.models: "%s"' % (e))
+    except ValueError, e:
+        raise ImproperlyConfigured('Error importing problem model.')
+    try:
+        model = getattr(mod, model_name)
+    except AttributeError:
+        raise ImproperlyConfigured('Module sdust_oj.problem.models does not define a "%s" model' % (model_name))
+    
+    return model
+
+def clear_sa_list(sa_list):
+    l = list(sa_list)
+    for e in l:
+        sa_list.remove(e)

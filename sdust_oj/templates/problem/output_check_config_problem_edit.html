@@ -1,0 +1,17 @@
+               <div>
+                    <h2>Output Check Config List</h2>
+                    <table>
+                        <tr>
+                            <td></td>
+                            <td>编号</td>
+                            <td>检查方法</td>
+                        </tr>
+                    {% for output_c in output_check_configs %}
+                        <tr>
+                            <td><input type="checkbox" name="output_check_configs" value="{{ output_c.id }}" {% if output_c.id in output_check_configs_id %}checked="checked" {% endif %}/> </td>
+                            <td>{{ output_c.id }}</td>
+                            <td>{{ output_c.check_method }}</td>
+                        </tr>
+                    {% endfor %}
+                    </table>
+               </div>

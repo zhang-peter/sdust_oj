@@ -65,7 +65,7 @@ class CompileConfig(DeclarativeBase):
 
     #relation definitions
     ProblemMeta = relation('ProblemMeta', primaryjoin='CompileConfig.problem_meta_id==ProblemMeta.id')
-    Problems = relation('Problem', primaryjoin='CompileConfig.id==problemCompileConfig.c.compileconfig_id', secondary=problemCompileConfig, secondaryjoin='problemCompileConfig.c.problem_id==Problem.id')
+    problems = relationship('Problem', secondary=problemCompileConfig, backref="compile_configs")
 
 
 class Description(DeclarativeBase):
@@ -102,7 +102,7 @@ class InputOutputData(DeclarativeBase):
 
     #relation definitions
     ProblemMeta = relation('ProblemMeta', primaryjoin='InputOutputData.problem_meta_id==ProblemMeta.id')
-    Problems = relation('Problem', primaryjoin='InputOutputData.id==problemIOData.c.io_id', secondary=problemIOData, secondaryjoin='problemIOData.c.problem_id==Problem.id')
+    problems = relationship('Problem', secondary=problemIOData, backref="input_output_datas")
 
 
 class KeywordCheckConfig(DeclarativeBase):
@@ -133,7 +133,7 @@ class OutputCheckConfig(DeclarativeBase):
 
     #relation definitions
     ProblemMeta = relation('ProblemMeta', primaryjoin='OutputCheckConfig.problem_meta_id==ProblemMeta.id')
-    Problems = relation('Problem', primaryjoin='OutputCheckConfig.id==problemOutputCheckConfig.c.outputcheck_id', secondary=problemOutputCheckConfig, secondaryjoin='problemOutputCheckConfig.c.problem_id==Problem.id')
+    problems = relationship('Problem', secondary=problemOutputCheckConfig, backref="output_check_configs")
 
 
 class Problem(DeclarativeBase):
@@ -161,6 +161,27 @@ class Problem(DeclarativeBase):
         返回列表
         """
         return get_judge_flow_name(self.judge_flow)
+    
+    def get_config_refer(self):
+        judge_id_str = str(self.judge_flow)
+        judge_id_strs = judge_id_str.split(JUDGE_FLOW_MARK_SEPARATOR)
+        configs_refer = []
+        
+        for f in judge_flows:
+            if str(f[0]) in judge_id_strs:
+                    configs_refer.append(f[3])
+        return configs_refer
+    
+    def get_config_list_template(self):
+        judge_id_str = str(self.judge_flow)
+        judge_id_strs = judge_id_str.split(JUDGE_FLOW_MARK_SEPARATOR)
+        config_list_templates = []
+        
+        for f in judge_flows:
+            if str(f[0]) in judge_id_strs:
+                config_list_templates.append(JUDGE_FLOW_TEMPLATES_PATH + f[2] + "_problem_edit.html")
+                    
+        return config_list_templates
 
 from sdust_oj.constant import JUDGE_FLOW_MARK_SEPARATOR, judge_flows,\
 JUDGE_FLOW_TEMPLATES_PATH
@@ -181,6 +202,7 @@ class ProblemMeta(DeclarativeBase):
     runtime_configs = relationship("RunConfig", backref="problem_meta")
     output_check_configs = relationship("OutputCheckConfig", backref="problem_meta")
     input_output_datas = relationship("InputOutputData", backref="problem_meta")
+    problems = relationship("Problem", backref="problem_meta")
     
     def get_judge_flow(self):
         """
@@ -192,15 +214,11 @@ class ProblemMeta(DeclarativeBase):
         judge_id_str = str(self.judge_flow)
         judge_id_strs = judge_id_str.split(JUDGE_FLOW_MARK_SEPARATOR)
         config_list_templates = []
-        for judge_id_str in judge_id_strs:
-            try:
-                judge_id = int(judge_id_str)
-            except ValueError:
-                continue
-            
-            for f in judge_flows:
-                if f[0] == judge_id:
-                    config_list_templates.append(JUDGE_FLOW_TEMPLATES_PATH + f[2])
+        
+        for f in judge_flows:
+            if str(f[0]) in judge_id_strs:
+                config_list_templates.append(JUDGE_FLOW_TEMPLATES_PATH + f[2] + "_list.html")
+                    
         return config_list_templates
 
 
@@ -208,14 +226,9 @@ class ProblemMeta(DeclarativeBase):
         judge_id_str = str(self.judge_flow)
         judge_id_strs = judge_id_str.split(JUDGE_FLOW_MARK_SEPARATOR)
         configs_refer = []
-        for judge_id_str in judge_id_strs:
-            try:
-                judge_id = int(judge_id_str)
-            except ValueError:
-                continue
-            
-            for f in judge_flows:
-                if f[0] == judge_id:
+        
+        for f in judge_flows:
+            if str(f[0]) in judge_id_strs:
                     configs_refer.append(f[3])
         return configs_refer
 
@@ -233,7 +246,7 @@ class RunConfig(DeclarativeBase):
 
     #relation definitions
     ProblemMeta = relation('ProblemMeta', primaryjoin='RunConfig.problem_meta_id==ProblemMeta.id')
-    Problems = relation('Problem', primaryjoin='RunConfig.id==problemRunConfig.c.runconfig_id', secondary=problemRunConfig, secondaryjoin='problemRunConfig.c.problem_id==Problem.id')
+    problems = relationship('Problem', secondary=problemRunConfig, backref="runtime_configs")
 
 
 class Submission(DeclarativeBase):

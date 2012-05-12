@@ -1,0 +1,21 @@
+               <div>
+                    <h2>Compile Config List</h2>
+                    
+                    <table>
+                        <tr>
+                            <td></td>
+                            <td>编号</td>
+                            <td>代码类型</td>
+                            <td>编译命令</td>
+                        </tr>
+                    {% for cc in compile_configs %}
+                        <tr>
+                            <td><input type="checkbox" name="compile_configs" value="{{ cc.id }}" {% if cc.id in compile_configs_id %}checked="checked" {% endif %}/> </td>
+                            <td>{{ cc.id }}</td>
+                            <td>{{ cc.code_type }}</td>
+                            <td>{{ cc.config }}</td>
+                        </tr>
+                    {% endfor %}
+                    </table>
+                    
+               </div>

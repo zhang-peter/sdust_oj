@@ -30,7 +30,8 @@
 					<div>
 						Judge Flow: {% for flow_str in problem.get_judge_flow %} {{ flow_str }} {% endfor %}
 					</div>
-
+               <form method="post" action = "" name = "problem_config_edit">
+               {% csrf_token%}
                <div>
                     <h2>Descriptions</h2>
                     
@@ -39,16 +40,12 @@
                             <td></td>
                             <td>编号</td>
                             <td>标题</td>
-                            <td></td>
-                            <td></td>
                         </tr>
                     {% for desc in meta_descs %}
                         <tr>
-                            <td><input type="radio" name="desc_id" value="{{ desc.id }}" checked="checked" /> </td>
+                            <td><input type="radio" name="desc_id" value="{{ desc.id }}" {% ifequal desc.id desc_id %}checked="checked" {% endifequal %}/> </td>
                             <td>{{ desc.id }}</td>
                             <td><a href="">{{ desc.title }}</a></td>
-                            <td><a href="">编辑</a></td>
-                            <td><a href="">删除</a></td>
                         </tr>
                     {% endfor %}
                     </table>
@@ -56,29 +53,30 @@
                
                <div>
                     <h2>Input Output Data</h2>
-                    <a href="{% url input_output_data_add meta.id %}">Add</a>
                     
                     <table>
                         <tr>
+                            <td></td>
                             <td>编号</td>
                             <td>标题</td>
-                            <td></td>
-                            <td></td>
                         </tr>
-                    {% for data in io_datas %}
+                    {% for data in meta_io_datas %}
                         <tr>
+                            <td><input type="checkbox" name="io_datas" value="{{ data.id }}" {% if data.id in io_datas_id %}checked="checked" {% endif %}/> </td>
                             <td>{{ data.id }}</td>
                             <td><a href="">{{ data.name }}</a></td>
-                            <td><a href="">编辑</a></td>
-                            <td><a href="">删除</a></td>
                         </tr>
                     {% endfor %}
                     </table>
                </div>
                
-				{% for template_name in meta.get_config_list_template %}
+				{% for template_name in problem.get_config_list_template %}
 				    {% include template_name %}
 				{% endfor %}
+				    <input name = "submit" value = "提交" type = "submit" />
+                    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                    <input name="reset" value="清空" type="reset">
+			    </form>
             </div>
             <footer>
                 <p>

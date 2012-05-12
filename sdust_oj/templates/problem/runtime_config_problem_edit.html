@@ -1,0 +1,21 @@
+               <div>
+                    <h2>Runtime Config List</h2>
+                    <table>
+                        <tr>
+                            <td></td>
+                            <td>编号</td>
+                            <td>代码类型</td>
+                            <td>内存限制（KB）</td>
+                            <td>时间限制（ms）</td>
+                        </tr>
+                    {% for run_c in runtime_configs %}
+                        <tr>
+                            <td><input type="checkbox" name="runtime_configs" value="{{ run_c.id }}" {% if run_c.id in runtime_configs_id %}checked="checked" {% endif %}/> </td>
+                            <td>{{ run_c.id }}</td>
+                            <td>{{ run_c.code_type }}</td>
+                            <td>{{ run_c.memory }}</td>
+                            <td>{{ run_c.time }}
+                        </tr>
+                    {% endfor %}
+                    </table>
+               </div>
