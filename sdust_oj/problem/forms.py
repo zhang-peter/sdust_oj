@@ -284,3 +284,8 @@ class RunConfigForm(forms.Form):
         
         return  run_config
 
+from sdust_oj.constant import code_types
+class SubmissionForm(forms.Form):
+    code_type = forms.ChoiceField(label=_('Code Type'), choices=code_types)
+    code_text = forms.CharField(label=_('Code Text'), widget=forms.Textarea)
+    code_file = forms.FileField(label=_('Code File'))

@@ -20,4 +20,5 @@ urlpatterns = patterns('',
     url(r'^submit_success/$', submit_success, name='submit_success'),
     url(r'^problem_list/(?P<page>\d{,10})/$', problem_list, name="problem_list"),
     url(r'^problem_detail/(?P<prob_id>\d{,10})/$', problem_detail, name="problem_detail"),
+    url(r'^submit/(?P<prob_id>\d{,10})/$', submit, name="submit"),
 )

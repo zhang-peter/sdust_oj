@@ -232,6 +232,7 @@ class ProblemMeta(DeclarativeBase):
                     configs_refer.append(f[3])
         return configs_refer
 
+from sdust_oj.constant import code_types
 class RunConfig(DeclarativeBase):
     __tablename__ = 'RunConfig'
 
@@ -247,6 +248,11 @@ class RunConfig(DeclarativeBase):
     #relation definitions
     ProblemMeta = relation('ProblemMeta', primaryjoin='RunConfig.problem_meta_id==ProblemMeta.id')
     problems = relationship('Problem', secondary=problemRunConfig, backref="runtime_configs")
+    
+    def get_code_type(self):
+        for ct in code_types:
+            if ct[0] == int(self.code_type):
+                return ct[1]
 
 
 class Submission(DeclarativeBase):

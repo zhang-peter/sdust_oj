@@ -186,4 +186,15 @@ def problem_detail(request, prob_id):
     res = render_to_response('problem/problem_detail.html', {"prob": prob})
     session.close()
     return res
-    
+
+from forms import SubmissionForm
+def submit(request, prob_id):
+    session = Session()
+    prob = session.query(Problem).get(int(prob_id))
+    if request.method == "POST":
+        pass
+    else:
+        form = SubmissionForm()
+        res = render_to_response('problem/submit.html', {"prob": prob, "form": form})
+    session.close()
+    return res
