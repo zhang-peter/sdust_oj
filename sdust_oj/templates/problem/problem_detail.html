@@ -1,61 +1,106 @@
-<!DOCTYPE html>
-<html lang="en">
-    <head>
-        <meta charset="utf-8" />
-        <!-- Always force latest IE rendering engine (even in intranet) & Chrome Frame
-        Remove this if you use the .htaccess -->
-        <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
-        <title>problem_detail</title>
-        <meta name="description" content="" />
-        <meta name="author" content="jingyong" />
-        <meta name="viewport" content="width=device-width; initial-scale=1.0" />
-        <!-- Replace favicon.ico & apple-touch-icon.png in the root of your domain and delete these references -->
-        <link rel="shortcut icon" href="/favicon.ico" />
-        <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
-    </head>
-    <body>
-        <div>
-            <header>
-                <h1>problem_detail</h1>
-            </header>
-            <nav>
-                <p>
-                    <a href="/">Home</a>
-                </p>
-                <p>
-                    <a href="/contact">Contact</a>
-                </p>
-            </nav>
+{% extends "base.html" %}
+{% block title %}{{ prob.id }}-{{ prob.description.title }}{% endblock %}
+{% block content %}
             <div>
             {% with prob.description as desc %}
-                <h1>{{ desc.title }}</h1>
-                <ul>
-                {% for runtime_config in prob.runtime_configs %}
-                    <li>代码类型：{{ runtime_config.get_code_type }} 时间限制：{{ runtime_config.time }}ms 内存限制：{{ runtime_config.memory }}KB</li>
-                {% endfor %}
-                </ul>
-                <a href="{% url submit prob.id %}">提交</a>
-                <h2>描述</h2>
-                <div>{{ desc.content }}</div>
-                <h2>输入</h2>
-                <div>{{ desc.input }}</div>
-                <h2>输出</h2>
-                <div>{{ desc.output }}</div>
-                <h2>样例输入</h2>
-                <div>{{ desc.sample_input }}</div>
-                <h2>样例输出</h2>
-                <div>{{ desc.sample_input }}</div>
-                <h2>提示</h2>
-                <div>{{ desc.hint }}</div>
-                <h2>来源</h2>
-                <div>{{ desc.source }}</div>
+            
+                <div class="ptt">
+                    {{ desc.title }}
+                </div>
+                
+                <div class="plm">
+                    <table align="center">
+                        <tbody>
+                        {% for runtime_config in prob.runtime_configs %}
+                            <tr>
+                                <td><b>代码类型：</b> {{ runtime_config.get_code_type }} </td>
+                                <td width="10px"></td>
+                                <td><b>时间限制：</b> {{ runtime_config.time }}MS </td>
+                                <td width="10px"></td>
+                                <td><b>内存限制：</b> {{ runtime_config.memory }}KB </td>
+                            </tr>
+                        {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+               
+                <p align="center">
+                    <font size="3" color="#333399">
+                        [<a href="{% url submit prob.id %}" class="login">提交</a>]&nbsp;&nbsp;
+                        [<a href="javascript:history.go(-1)">返回</a>]&nbsp;&nbsp;
+                        [<a href="problem/status.action?id=27291">状态</a>]&nbsp;&nbsp; 
+                    </font>
+                </p>
+               
+                <div class="hiddable" id="vj_description" style="display: block; ">
+                    <p class="pst">
+                        描述
+                    </p>
+                    <div class="textBG">
+                        <div class="ptx" lang="zh-CN">
+                            {{ desc.content|safe }}
+                        </div>
+                    </div>
+                </div>
+               
+                <div class="hiddable" id="vj_input" style="display: block; ">
+                    <p class="pst">
+                        输入
+                    </p>
+                    <div class="textBG">
+                        <div class="ptx" lang="zh-CN">
+                            {{ desc.input }}
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="hiddable" id="vj_output" style="display: block; ">
+                    <p class="pst">
+                        输出
+                    </p>
+                    <div class="textBG">
+                        <div class="ptx" lang="zh-CN">
+                            {{ desc.output }}
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="hiddable" id="vj_sampleInput" style="display: block; ">
+                    <p class="pst">
+                        样例输入
+                    </p>
+                    <div class="textBG">
+                        <pre class="sio">{{ desc.sample_input }}</pre>
+                    </div>
+                </div>
+                
+                <div class="hiddable" id="vj_sampleOutput" style="display: block; ">
+                    <p class="pst">
+                        样例输出
+                    </p>
+                    <div class="textBG">
+                        <pre class="sio">{{ desc.sample_input }}</pre>
+                    </div>
+                </div>
+                
+                <div class="hiddable" id="vj_hint" style="display: block; ">
+                    <p class="pst">
+                        提示
+                    </p>
+                    <div class="textBG">
+                        <div class="ptx" lang="zh-CN">
+                            {{ desc.hint }}
+                        </div>
+                    </div>
+                </div>
+
+                <p class="pst">来源</p>
+                <div class="textBG">
+                    <div class="ptx" lang="zh-CN">
+                        {{ desc.source }}
+                    </div>
+                </div>
+
             {% endwith %}
             </div>
-            <footer>
-                <p>
-                    &copy; Copyright  by jingyong
-                </p>
-            </footer>
-        </div>
-    </body>
-</html>
+{% endblock %}

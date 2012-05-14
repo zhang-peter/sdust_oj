@@ -1,46 +1,33 @@
-<!DOCTYPE html>
-<html lang="en">
-    <head>
-        <meta charset="utf-8" />
-        <!-- Always force latest IE rendering engine (even in intranet) & Chrome Frame
-        Remove this if you use the .htaccess -->
-        <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
-        <title>submit</title>
-        <meta name="description" content="" />
-        <meta name="author" content="jingyong" />
-        <meta name="viewport" content="width=device-width; initial-scale=1.0" />
-        <!-- Replace favicon.ico & apple-touch-icon.png in the root of your domain and delete these references -->
-        <link rel="shortcut icon" href="/favicon.ico" />
-        <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
-    </head>
-    <body>
-        <div>
-            <header>
-                <h1>submit</h1>
-            </header>
-            <nav>
-                <p>
-                    <a href="/">Home</a>
-                </p>
-                <p>
-                    <a href="/contact">Contact</a>
-                </p>
-            </nav>
-            <div>
-                <h1>{{ prob.id }}--{{ prob.description.title }}</h1>
-                <form name="submit" action="" enctype="multipart/form-data" method="POST">
+{% extends "base.html" %}
+{% block title %}提交{% endblock %}
+{% block content %}
+            <div style="width:800px;MARGIN-RIGHT:auto;MARGIN-LEFT:auto;">
+                <form id="form" name="submit" action="" enctype="multipart/form-data" method="POST">
                     {% csrf_token%}
-                    {{ form.as_p }}   
-                    <input name = "submit" value = "提交" type = "submit" />
-                    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-                    <input name="reset" value="清空" type="reset">
+                    <table>
+                        <tbody>
+                            <tr>
+                                <td>题目：</td>
+                                <td><b>{{ prob.id }}</b> - <a href="{% url problem_detail prob.id %}">{{ prob.description.title }}</a></td>
+                            </tr>
+                            <tr>
+                                <td>代码类型：</td>
+                                <td>
+                                    {{ form.code_type }}
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>zip代码：</td>
+                                <td>
+                                    {{ form.code_file }}
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                    <textarea name="code_text" cols="100" rows="25" id="source"></textarea>
+                    <br>
+                    <input style="float:left" class="bnt1" type="submit" id="submit" value="提交">
+                    <input style="margin-left:20px;float:left" class="bnt1" type="button" value="返回" onclick="history.go(-1)">
                 </form>
-            </div>
-            <footer>
-                <p>
-                    &copy; Copyright  by jingyong
-                </p>
-            </footer>
-        </div>
-    </body>
-</html>
+           </div>
+{% endblock %}

@@ -1,0 +1,34 @@
+{% extends "base.html" %}
+            {% block title %}
+                状态列表
+            {% endblock %}
+
+            {% block content %}
+                <div>
+                    <table cellSpacing="0" cellPadding="0" width="100%" border="1" class="a" bordercolor="#FFFFFF">
+                        <tr class="in">
+                        <td>编号</td>
+                        <td>用户</td>
+                        <td>题目</td>
+                        <td>结果</td>
+                        <td>内存</td>
+                        <td>时间</td>
+                        <td>代码类型</td>
+                        <td>代码长度</td>
+                        <td>提交时间</td>
+                        </tr>
+                {% for sub in subs %}
+                    <tr align="center">
+                        <td>{{ sub.id }}</td>
+                        <td>{{ sub.user }}</td>
+                        <td>{{ sub.problem.id }}</td>
+                        <td>{{ sub.status }}</td>
+                        <td>{{ sub.memory }}</td>
+                        <td>{{ sub.time }}</td>
+                        <td>{{ sub.code_type }}</td>
+                        <td>{{ sub.sub_time }}</td>
+                    </tr>
+                {% endfor %}
+                    </table>
+                </div>
+            {% endblock %}

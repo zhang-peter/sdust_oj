@@ -1,5 +1,7 @@
 from django import forms
-from sdust_oj.problem.models import CompilableCodeGenerationConfig, CompileConfig, Description,InputOutputData, KeywordCheckConfig, OutputCheckConfig, Problem, ProblemMeta, RunConfig
+from sdust_oj.problem.models import CompilableCodeGenerationConfig, CompileConfig, Description,InputOutputData,\
+    KeywordCheckConfig, OutputCheckConfig, Problem, ProblemMeta, RunConfig,\
+    Submission
 from sdust_oj.sa_conn import Session
 from django.utils.translation import ugettext, ugettext_lazy as _
 
@@ -189,7 +191,7 @@ class OutputCheckConfigForm(forms.Form):
 from sdust_oj.constant import judge_flows, JUDGE_FLOW_MARK_SEPARATOR
 class ProblemMetaForm(forms.Form):
     title = forms.CharField(label=_('title'), max_length = 254)
-    judge_flow = forms.MultipleChoiceField(label=_('judge_flow'), choices=())
+    judge_flow = forms.CharField(label=('judge_flow'), max_length = 254)
     
     def __init__(self, *args, **kwargs):
         super(ProblemMetaForm, self).__init__(*args, **kwargs)
@@ -208,6 +210,7 @@ class ProblemMetaForm(forms.Form):
             
         problem_meta.judge_flow = flow_mark
         session = Session()
+        session.expire_on_commit = False
         session.add(problem_meta)
         session.commit()
         session.close()
@@ -285,7 +288,62 @@ class RunConfigForm(forms.Form):
         return  run_config
 
 from sdust_oj.constant import code_types
+from django.http import settings
+import os
 class SubmissionForm(forms.Form):
-    code_type = forms.ChoiceField(label=_('Code Type'), choices=code_types)
-    code_text = forms.CharField(label=_('Code Text'), widget=forms.Textarea)
-    code_file = forms.FileField(label=_('Code File'))
+    code_type = forms.ChoiceField(label=_('Code Type'), choices=())
+    code_text = forms.CharField(label=_('Code Text'), widget=forms.Textarea, required=False)
+    code_file = forms.FileField(label=_('Code File'), required=False)
+    
+    def __init__(self, *args, **kwargs):
+        super(SubmissionForm, self).__init__(*args, **kwargs)
+        self.fields['code_type'].choices = [(c[0], c[1]) for c in code_types]
+    
+    
+    def clean_code_file(self):
+        code_file = self.cleaned_data['code_file']
+        return self.check_file(code_file)
+    
+    def check_file(self, f):
+        if f is None:
+            return True
+        if f.size > 1024 * 1024:
+            raise forms.ValidationError(_("File size should not be larger than 1024KB!"))
+        if f.content_type not in ["application/x-zip-compressed", "application/zip"]:
+            raise forms.ValidationError(_("Only zip file is allowed!"))
+    
+    def save(self, problem=None):
+        if problem is None:
+            return
+        sub = Submission()
+        sub.status = 1
+        sub.problem_id = problem.id
+        sub.code_type = self.cleaned_data["code_type"]
+        sub.code = self.cleaned_data["code_text"]
+        session = Session()
+        session.add(sub)
+        session.commit()
+        self.handle_code(sub, self.cleaned_data["code_file"])
+        session.close()
+        
+        return sub
+
+    def handle_code(self, sub, code_file):
+        save_file = False
+        for c in code_types:
+            if c[0] == sub.code_type:
+                save_file = c[2]
+                break
+        if save_file is not True:
+            return
+        
+        code_path = os.path.join(settings.JUDGE_ROOT, "data", str(sub.problem.problem_meta.id), "zipcode")
+        if os.path.exists(code_path) is False:
+            os.makedirs(code_path)
+            
+        f = open(os.path.join(code_path, "%d.zip" % sub.id), "wb+")
+        if code_file is not None:
+            for chunk in code_file.chunks():
+                f.write(chunk)
+        f.close()
+        

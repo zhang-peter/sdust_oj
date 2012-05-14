@@ -17,13 +17,18 @@ judge_flows = [
      ]
 
 code_types = [
-    # 0: id,   1: name
-    (  1,        "C"),
-    (  2,        "C++"),
-    (  3,        "Java"),
-    (  4,        "Python"),
-    (  5,        "PHP"),
-    (  6,        "Perl"),
-    (  9,        "Code::Blocks"),
-    (  10,       "VC++6.0"),
+    # 0: id,   1: name             2: save code as file
+    (  1,        "C",                     False),
+    (  2,        "C++",                   False),
+    (  3,        "Java",                  False),
+    (  4,        "Python",                False),
+    (  5,        "PHP",                   False),
+    (  6,        "Perl",                  False),
+    (  9,        "Code::Blocks",          True),
+    (  10,       "VC++6.0",               True),
     ]
+
+STATUS = [
+    # 0: id,   1: name
+    (  1,        "Pending"),
+          ]

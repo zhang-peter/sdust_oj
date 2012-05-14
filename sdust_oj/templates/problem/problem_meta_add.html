@@ -1,0 +1,59 @@
+{% extends "base.html" %}
+
+{% block metas %}
+    <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js"></script>
+    <script type="text/javascript" src="{{ STATIC_URL }}js/jquery.dragsort-0.5.1.min.js"></script>
+{% endblock %}
+
+{% block title %}添加题元{% endblock %}
+
+{% block content %}
+
+            <div style="width:800px;MARGIN-RIGHT:auto;MARGIN-LEFT:auto;">
+                <form id="form" name="submit" action="" method="POST">
+                    {% csrf_token%}
+                    <table>
+                        <tbody>
+                            <tr>
+                                <td>标题：</td>
+                                <td>
+                                    {{ form.title }}
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>判定选择：</td>
+                                <td>
+                                    可选判定：
+                                    <ul id="avail_list">
+                                    {% for choice in choices %}
+                                        <li><div>{{ choice.1 }}</div></li>
+                                    {% endfor %}
+                                    </ul>
+                                    
+                                    判定及顺序：
+                                    <ul id="choice_list">
+                                        
+                                    </ul>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                    <br>
+                    <input type="hidden" name="judge_flow" value="" />
+                    <input style="float:left" class="bnt1" type="submit" id="submit" value="提交">
+                    <input style="margin-left:20px;float:left" class="bnt1" type="button" value="返回" onclick="history.go(-1)">
+                </form>
+                
+                <script type="text/javascript">
+                    $("#avail_list, #choice_list").dragsort({ dragSelector: "div", dragBetween: true, dragEnd: saveOrder, placeHolderTemplate: "<li class='placeHolder'><div></div></li>" });
+                    
+                    function saveOrder() {
+                        var data = $("#chioce_list li").map(function() { return $(this).children().html(); }).get();
+                        $("input[name=judge_flow]").val(data.join("|"));
+                    };
+                </script>
+
+                
+           </div>
+
+{% endblock %}

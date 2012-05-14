@@ -146,6 +146,8 @@ class Problem(DeclarativeBase):
     judge_flow = Column(u'judge_flow', VARCHAR(length=254))
     problem_meta_id = Column(u'problem_meta_id', INTEGER(), ForeignKey('ProblemMeta.id'))
     description_id = Column(u'description_id', INTEGER(), ForeignKey('Description.id'))
+    submit = Column(u'submit', INTEGER(), default=0)
+    accept = Column(u'accept', INTEGER(), default=0)
 
     #relation definitions
     ProblemMeta = relation('ProblemMeta', primaryjoin='Problem.problem_meta_id==ProblemMeta.id')
@@ -155,6 +157,13 @@ class Problem(DeclarativeBase):
     KeywordCheckConfigs = relation('KeywordCheckConfig', primaryjoin='Problem.id==problemKeywordCheckConfig.c.problem_id', secondary=problemKeywordCheckConfig, secondaryjoin='problemKeywordCheckConfig.c.keyconfig_id==KeywordCheckConfig.id')
     OutputCheckConfigs = relation('OutputCheckConfig', primaryjoin='Problem.id==problemOutputCheckConfig.c.problem_id', secondary=problemOutputCheckConfig, secondaryjoin='problemOutputCheckConfig.c.outputcheck_id==OutputCheckConfig.id')
     RunConfigs = relation('RunConfig', primaryjoin='Problem.id==problemRunConfig.c.problem_id', secondary=problemRunConfig, secondaryjoin='problemRunConfig.c.runconfig_id==RunConfig.id')
+
+    submissions = relationship('Submission', backref='problem')
+    
+    def get_ac_ratio(self):
+        if self.submit == 0:
+            return 0
+        return self.accept * 100 / self.submit
 
     def get_judge_flow(self):
         """
@@ -254,7 +263,7 @@ class RunConfig(DeclarativeBase):
             if ct[0] == int(self.code_type):
                 return ct[1]
 
-
+from datetime import datetime
 class Submission(DeclarativeBase):
     __tablename__ = 'Submission'
 
@@ -263,14 +272,15 @@ class Submission(DeclarativeBase):
     #column definitions
     id = Column(u'id', INTEGER(), primary_key=True, nullable=False)
     status = Column(u'status', INTEGER())
-    sub_time = Column(u'sub_time', DATETIME())
+    sub_time = Column(u'sub_time', DATETIME(), default=datetime.now())
     used_memory = Column(u'used_memory', INTEGER())
     used_time = Column(u'used_time', INTEGER())
     user_id = Column(u'user_id', INTEGER(), ForeignKey('User.id'))
     problem_id = Column(u'problem_id', INTEGER(), ForeignKey('Problem.id'))
+    code_type = Column(u'code_type', INTEGER())
+    code = Column(u'code', TEXT())
 
     #relation definitions
     User = relation('User', primaryjoin='Submission.user_id==User.id')
-    Problem = relation('Problem', primaryjoin='Submission.problem_id==Problem.id')
     
 metadata.create_all()

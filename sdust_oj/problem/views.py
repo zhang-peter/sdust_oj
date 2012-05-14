@@ -3,7 +3,8 @@ from django.core.urlresolvers import reverse
 from django.http import HttpResponseRedirect
 from django.template import RequestContext
 from django.http import Http404
-from sdust_oj.problem.models import ProblemMeta, Problem, Description, InputOutputData
+from sdust_oj.problem.models import ProblemMeta, Problem, Description,\
+    InputOutputData, Submission
 from sdust_oj.sa_conn import Session
 from django.core.paginator import Paginator, InvalidPage, EmptyPage
 
@@ -146,7 +147,21 @@ def meta_config_add(request, meta_id, configForm, redirect_to=None):
     
     return render_to_response("problem/upload.html", {
         'form': form,}, context_instance=RequestContext(request)) 
-    
+
+from forms import ProblemMetaForm
+from sdust_oj.constant import judge_flows
+def meta_add(request):
+    if request.method == 'POST':
+        form = ProblemMetaForm(request.POST)
+        if form.is_valid():
+            meta = form.save()
+            return HttpResponseRedirect(reverse('meta_detail', kwargs={'meta_id': meta.id}))
+    else:
+        form = ProblemMetaForm()
+        
+    choices = [(f[0], f[1]) for f in judge_flows]
+    return render_to_response("problem/problem_meta_add.html", {
+        'form': form, "choices": choices}, context_instance=RequestContext(request)) 
     
 def form_upload(request,uploadForm):
     if request.method == 'POST':
@@ -172,7 +187,8 @@ def problem_list(request, page=1):
          probs = paginator.page(prob_all)
     except (EmptyPage, InvalidPage):
         probs = paginator.page(paginator.num_pages)
-    res = render_to_response('problem/problem_list.html', {"probs": probs})
+    res = render_to_response('problem/problem_list.html', {"probs": probs},
+                             context_instance=RequestContext(request))
     session.close()
     
     return res
@@ -183,7 +199,8 @@ def problem_detail(request, prob_id):
     if prob is None:
         session.close()
         raise Http404
-    res = render_to_response('problem/problem_detail.html', {"prob": prob})
+    res = render_to_response('problem/problem_detail.html', {"prob": prob},
+                             context_instance=RequestContext(request))
     session.close()
     return res
 
@@ -192,9 +209,28 @@ def submit(request, prob_id):
     session = Session()
     prob = session.query(Problem).get(int(prob_id))
     if request.method == "POST":
-        pass
+        form = SubmissionForm(request.POST, request.FILES)
+        if form.is_valid():
+            form.save(problem=prob)
     else:
         form = SubmissionForm()
-        res = render_to_response('problem/submit.html', {"prob": prob, "form": form})
+    res = render_to_response('problem/submit.html', {"prob": prob, "form": form},
+                             context_instance=RequestContext(request))
     session.close()
+    return res
+
+def status(request, page=1):
+    session = Session()
+    sub_all = session.query(Submission).all()
+    
+    paginator = Paginator(sub_all, settings.METAS_PER_PAGE)
+    
+    try:
+         subs = paginator.page(sub_all)
+    except (EmptyPage, InvalidPage):
+        subs = paginator.page(paginator.num_pages)
+    res = render_to_response('problem/status_list.html', {"subs": subs},
+                             context_instance=RequestContext(request))
+    session.close()
+    
     return res

@@ -1,50 +1,23 @@
-<!DOCTYPE html>
-<html lang="en">
-    <head>
-        <meta charset="utf-8" />
-        <!-- Always force latest IE rendering engine (even in intranet) & Chrome Frame
-        Remove this if you use the .htaccess -->
-        <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
-        <title>problem_list</title>
-        <meta name="description" content="" />
-        <meta name="author" content="jingyong" />
-        <meta name="viewport" content="width=device-width; initial-scale=1.0" />
-        <!-- Replace favicon.ico & apple-touch-icon.png in the root of your domain and delete these references -->
-        <link rel="shortcut icon" href="/favicon.ico" />
-        <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
-    </head>
-    <body>
-        <div>
-            <header>
-                <h1>problem_list</h1>
-            </header>
-            <nav>
-                <p>
-                    <a href="/">Home</a>
-                </p>
-                <p>
-                    <a href="/contact">Contact</a>
-                </p>
-            </nav>
-            <div>
-                <table>
-                    <tr>
-                        <td>编号</td>
-                        <td>标题</td>
-                    </tr>
-                {% for p in probs %}
-                    <tr>
-                        <td>{{ p.id }}</td>
-                        <td>{% if p.description %}<a href="{% url problem_detail p.id %}">{{ p.description.title }}</a>{% else %}题目没有描述{% endif %}</td>
-                    </tr>
-                {% endfor %}
-                </table>
-            </div>
-            <footer>
-                <p>
-                    &copy; Copyright  by jingyong
-                </p>
-            </footer>
-        </div>
-    </body>
-</html>
+{% extends "base.html" %}
+            {% block title %}
+                题目列表
+            {% endblock %}
+
+            {% block content %}
+                <div>
+                    <table cellSpacing="0" cellPadding="0" width="100%" border="1" class="a" bordercolor="#FFFFFF">
+                        <tr class="in">
+                            <td>编号</td>
+                            <td>标题</td>
+                            <td>通过率（通过／提交）</td>
+                        </tr>
+                    {% for p in probs %}
+                        <tr align="center">
+                            <td>{{ p.id }}</td>
+                            <td align="left">{% if p.description %}<a href="{% url problem_detail p.id %}">{{ p.description.title }}</a>{% else %}题目没有描述{% endif %}</td>
+                            <td>{{ p.get_ac_ratio }}%({{ p.submit }}/{{ p.accept }})</td>
+                        </tr>
+                    {% endfor %}
+                    </table>
+                </div>
+            {% endblock %}

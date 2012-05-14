@@ -1,5 +1,8 @@
 from django.conf.urls.defaults import patterns, include, url
 from sdust_oj.views import test_view, index
+from django.http import settings
+from django.contrib.staticfiles.urls import staticfiles_urlpatterns
+
 urlpatterns = patterns('',
     # Examples:
     url(r'^$', 'sdust_oj.views.index', name='index'),
@@ -9,3 +12,11 @@ urlpatterns = patterns('',
     url(r'^test/', test_view, name="test_view"),
     url(r'^admin/', include('sdust_oj.admin.urls')),
 )
+
+
+if settings.DEBUG:
+    urlpatterns += patterns('',
+        url(r'^media/(?P<path>.*)$', 'django.views.static.serve', {
+            'document_root': settings.MEDIA_ROOT,
+        }),
+    )
