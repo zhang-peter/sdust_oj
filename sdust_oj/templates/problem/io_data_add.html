@@ -1,0 +1,35 @@
+                            
+{% extends "base.html" %}
+{% block title %}添加输入输出数据{% endblock %}
+{% block content %}
+            <div style="width:800px;MARGIN-RIGHT:auto;MARGIN-LEFT:auto;">
+                <form id="form" name="submit" action="" enctype="multipart/form-data" method="POST">
+                    {% csrf_token%}
+                    <table>
+                        <tbody>
+                            <tr>
+                                <td>题元：</td>
+                                <td><b>{{ meta.id }}</b> - <a href="{% url meta_detail meta.id %}">{{ meta.title }}</a></td>
+                            </tr>
+                            <tr>
+                                <td>名称：</td>
+                                <td>{{ form.name  }}</td>
+                            </tr>
+                            <tr>
+                                <td>输入文件（*.in）：</td>
+                                <td>{{ form.input_file }}</td>
+                            </tr>
+                            <tr>
+                                <td>输出文件（*.out）：</td>
+                                <td>{{ form.output_file }}</td>
+                            </tr>                                            
+                        </tbody>
+                    </table>
+                    <br>
+                    <input style="float:left" class="bnt1" type="submit" id="submit" value="提交">
+                    <input style="margin-left:20px;float:left" class="bnt1" type="button" value="返回" onclick="history.go(-1)">
+                </form>
+           </div>
+           
+{% endblock %}
+                            

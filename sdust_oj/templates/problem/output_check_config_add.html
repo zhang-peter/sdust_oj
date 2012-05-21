@@ -1,0 +1,27 @@
+                        
+{% extends "base.html" %}
+{% block title %}添加输出检查配置{% endblock %}
+{% block content %}
+            <div style="width:800px;MARGIN-RIGHT:auto;MARGIN-LEFT:auto;">
+                <form id="form" name="submit" action="" enctype="multipart/form-data" method="POST">
+                    {% csrf_token%}
+                    <table>
+                        <tbody>
+                            <tr>
+                                <td>题元：</td>
+                                <td><b>{{ meta.id }}</b> - <a href="{% url meta_detail meta.id %}">{{ meta.title }}</a></td>
+                            </tr>
+                            <tr>
+                                <td>检查方法：</td>
+                                <td>{{ form.check_method }}</td>
+                            </tr>                                        
+                        </tbody>
+                    </table>
+                    <br>
+                    <input style="float:left" class="bnt1" type="submit" id="submit" value="提交">
+                    <input style="margin-left:20px;float:left" class="bnt1" type="button" value="返回" onclick="history.go(-1)">
+                </form>
+           </div>
+           
+{% endblock %}
+                            

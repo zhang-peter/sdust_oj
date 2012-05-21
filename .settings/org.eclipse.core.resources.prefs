@@ -1,4 +1,9 @@
-#Wed May 09 10:40:00 CST 2012
+#Thu May 17 15:27:38 CST 2012
 eclipse.preferences.version=1
 encoding//sdust_oj/constant.py=utf8
+encoding//sdust_oj/models/auth.py=UTF8
+encoding//sdust_oj/models/problem.py=UTF8
 encoding//sdust_oj/problem/models.py=utf8
+encoding//sdust_oj/tables/__init__.py=UTF8
+encoding//sdust_oj/tables/auth.py=UTF8
+encoding//sdust_oj/tables/problem.py=UTF8

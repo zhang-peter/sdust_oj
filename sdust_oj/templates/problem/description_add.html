@@ -1,0 +1,74 @@
+                            
+{% extends "base.html" %}
+{% block title %}添加描述{% endblock %}
+{% block content %}
+            <div style="width:800px;MARGIN-RIGHT:auto;MARGIN-LEFT:auto;">
+                <form id="form" name="submit" action="" enctype="multipart/form-data" method="POST">
+                    {% csrf_token%}
+                    <table>
+                        <tbody>
+                            <tr>
+                                <td>题元：</td>
+                                <td><b>{{ meta.id }}</b> - <a href="{% url meta_detail meta.id %}">{{ meta.title }}</a></td>
+                            </tr>
+                            <tr>
+                                <td>标题：</td>
+                                <td>{{ form.title  }}</td>
+                            </tr>
+                            <tr>
+                                <td>描述：</td>
+                                <td><textarea name="content" cols="100" rows="15" id="content">{{ form.initial.content }}</textarea></td>
+                            </tr>
+                            <tr>
+                                <td>输入：</td>
+                                <td><textarea name="input" cols="100" rows="15" id="input">{{ form.initial.input }}</textarea></td>
+                            </tr>
+                            <tr>
+                                <td>输出：</td>
+                                <td><textarea name="output" cols="100" rows="15" id="output">{{ form.initial.output }}</textarea></td>
+                            </tr>
+                            <tr>
+                                <td>样例输入：</td>
+                                <td><textarea name="sample_input" cols="97" rows="10" id="sample_input">{{ form.initial.sample_input }}</textarea></td>
+                            </tr>
+                            <tr>
+                                <td>样例输出：</td>
+                                <td><textarea name="sample_output" cols="97" rows="10" id="sample_output">{{ form.initial.sample_output }}</textarea></td>
+                            </tr>
+                            
+                            <tr>
+                                <td>提示：</td>
+                                <td><textarea name="hint" cols="100" rows="15" id="hint">{{ form.initial.hint }}</textarea></td>
+                            </tr>
+                            <tr>
+                                <td>来源：</td>
+                                <td>{{ form.source }}</td>
+                            </tr>                                               
+                        </tbody>
+                    </table>
+                    <br>
+                    <input style="float:left" class="bnt1" type="submit" id="submit" value="提交">
+                    <input style="margin-left:20px;float:left" class="bnt1" type="button" value="返回" onclick="history.go(-1)">
+                </form>
+           </div>
+           
+            <!-- KindEditor SETUP -->
+            <script charset="utf-8" src="{{ STATIC_URL }}lib/kindeditor/kindeditor-min.js"></script>
+            <script charset="utf-8" src="{{ STATIC_URL }}lib/kindeditor/lang/zh_CN.js"></script>
+            <script>
+                    KindEditor.ready(function(K) {
+                        var options = {
+                            width : '700px',
+                            height : '100px',
+                            filterMode : true
+                        };
+                        var editorContent = K.create('#content', options);
+                        var editorInput = K.create('#input', options);
+                        var editorOutput = K.create('#output', options);                  
+                        var editorHint = K.create('#hint', options);           
+                    });
+            </script>
+            <!-- KindEditor SETUP -->
+           
+{% endblock %}
+                            

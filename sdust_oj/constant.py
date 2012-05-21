@@ -12,7 +12,7 @@ JUDGE_FLOW_TEMPLATES_PATH = "problem/"
 judge_flows = [
    # 0:id  1:name           2: template         3:model refer              4: model name
     (1, "Compile",      "compile_config",       "compile_configs",        "CompileConfig"),
-    (2, "Run",          "runtime_config",       "runtime_configs",        "RunConfig"),
+    (2, "Run",          "runtime_config",       "runtime_configs",        "RuntimeConfig"),
     (3, "Output Check", "output_check_config",  "output_check_configs" ,   "OutputCheckConfig"),
      ]
 

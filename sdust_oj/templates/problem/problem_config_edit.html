@@ -1,35 +1,11 @@
-<!DOCTYPE html>
-<html lang="en">
-    <head>
-        <meta charset="utf-8" />
-        <!-- Always force latest IE rendering engine (even in intranet) & Chrome Frame
-        Remove this if you use the .htaccess -->
-        <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
-        <title>Problem Config Edit</title>
-        <meta name="description" content="" />
-        <meta name="author" content="jingyong" />
-        <meta name="viewport" content="width=device-width; initial-scale=1.0" />
-        <!-- Replace favicon.ico & apple-touch-icon.png in the root of your domain and delete these references -->
-        <link rel="shortcut icon" href="/favicon.ico" />
-        <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
-    </head>
-    <body>
-        <div>
-            <header>
-                <h1>Problem Config Edit</h1>
-            </header>
-            <nav>
-                <p>
-                    <a href="/">Home</a>
-                </p>
-                <p>
-                    <a href="/contact">Contact</a>
-                </p>
-            </nav>
+{% extends "base.html" %}
+
+{% block title %}编辑题目数据{% endblock %}
+{% block content %}
             <div>
-					<div>
-						Judge Flow: {% for flow_str in problem.get_judge_flow %} {{ flow_str }} {% endfor %}
-					</div>
+                    <div>
+                        Judge Flow: {% for flow_str in problem.get_judge_flow %} {{ flow_str }} {% endfor %}
+                    </div>
                <form method="post" action = "" name = "problem_config_edit">
                {% csrf_token%}
                <div>
@@ -70,19 +46,12 @@
                     </table>
                </div>
                
-				{% for template_name in problem.get_config_list_template %}
-				    {% include template_name %}
-				{% endfor %}
-				    <input name = "submit" value = "提交" type = "submit" />
+                {% for template_name in problem.get_edit_config_list_template %}
+                    {% include template_name %}
+                {% endfor %}
+                    <input name = "submit" value = "提交" type = "submit" />
                     &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
                     <input name="reset" value="清空" type="reset">
-			    </form>
+                </form>
             </div>
-            <footer>
-                <p>
-                    &copy; Copyright  by jingyong
-                </p>
-            </footer>
-        </div>
-    </body>
-</html>
+{% endblock %}

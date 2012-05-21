@@ -1,16 +1,23 @@
 {% extends "base.html" %}
 
 {% block content %}
-	<div class = "problem_meta_upload">
 
-	<form enctype = "multipart/form-data" method="post" action = "." name = "problem_meta_upload">
+            <div style="width:800px;MARGIN-RIGHT:auto;MARGIN-LEFT:auto;">
+                <form id="form" name="config_add" action="" enctype="multipart/form-data" method="POST">
+                    {% csrf_token%}
+                    <table>
+                        <tbody>
+                            <tr>
+                                <td>题元：</td>
+                                <td><b>{{ meta.id }}</b> - <a href="{% url meta_detail meta.id %}">{{ meta.title }}</a></td>
+                            </tr>
+                            {% include template_name %}
+                        </tbody>
+                    </table>
+                    <br>
+                    <input style="float:left" class="bnt1" type="submit" id="submit" value="提交">
+                    <input style="margin-left:20px;float:left" class="bnt1" type="button" value="返回" onclick="history.go(-1)">
+                </form>
+           </div>
 
-	{% csrf_token%}
-	{{form.as_p}}	
-	<br>
-	<br>
-	<input name = "submit" value = "提交" type = "submit" />
-	&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-    <input name="reset" value="清空" type="reset">
-</div>
 {% endblock %} 

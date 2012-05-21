@@ -1,7 +1,7 @@
 {% extends "base.html" %}
 
 {% block metas %}
-    <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js"></script>
+    <script type="text/javascript" src="{{ STATIC_URL }}js/jquery.min.js"></script>
     <script type="text/javascript" src="{{ STATIC_URL }}js/jquery.dragsort-0.5.1.min.js"></script>
 {% endblock %}
 
@@ -26,7 +26,7 @@
                                     可选判定：
                                     <ul id="avail_list">
                                     {% for choice in choices %}
-                                        <li><div>{{ choice.1 }}</div></li>
+                                        <li value="{{ choice.0 }}"><div>{{ choice.1 }}</div></li>
                                     {% endfor %}
                                     </ul>
                                     
@@ -48,8 +48,8 @@
                     $("#avail_list, #choice_list").dragsort({ dragSelector: "div", dragBetween: true, dragEnd: saveOrder, placeHolderTemplate: "<li class='placeHolder'><div></div></li>" });
                     
                     function saveOrder() {
-                        var data = $("#chioce_list li").map(function() { return $(this).children().html(); }).get();
-                        $("input[name=judge_flow]").val(data.join("|"));
+                        var data = $("#choice_list li").map(function() { return $(this).attr("value") }).get();
+                        $("input[name=judge_flow]").val(data.join("{{ sper_mark }}"));
                     };
                 </script>
 

@@ -43,7 +43,8 @@ def meta_detail(request, meta_id):
             
     session.close()
     
-    return render_to_response('problem/meta_detail.html', data)
+    return render_to_response('problem/meta_detail.html', data,
+                             context_instance=RequestContext(request))
 
 def submit_success(request):
     return render_to_response('problem/submit_success.html')
@@ -132,24 +133,33 @@ def problem_config_edit(request, id):
         
         return render_to_response("problem/problem_config_edit.html", data, context_instance=RequestContext(request)) 
 
-def meta_config_add(request, meta_id, configForm, redirect_to=None):
+def meta_config_add(request, meta_id, configForm, template_name=None,
+                    redirect_to=None):
+    session = Session()
+    meta = session.query(ProblemMeta).get(meta_id)
     if request.method == 'POST':
+        request.POST.update({"problem_meta_id":meta_id})
         form = configForm(request.POST, request.FILES)
         
         if form.is_valid():
-            obj = form.save()
+            obj = form.save(meta_id=meta_id)
             if redirect_to is None:
-                return HttpResponseRedirect(reverse('meta_detail', kwargs={'meta_id': meta_id}))
+                res = HttpResponseRedirect(reverse('meta_detail', kwargs={'meta_id': meta_id}))
             else:
-                return HttpResponseRedirect(reverse(redirect_to, kwargs={'id': obj.id}))
-    else:
-        form = configForm(initial={'problem_meta_id': meta_id})
+                res = HttpResponseRedirect(reverse(redirect_to, kwargs={'id': obj.id}))
+            session.close()
+            return res    
+        
+    form = configForm(initial={'problem_meta_id': meta_id})
+    res = render_to_response(template_name, {
+            'form': form, "meta":meta},
+            context_instance=RequestContext(request))
+    session.close()
     
-    return render_to_response("problem/upload.html", {
-        'form': form,}, context_instance=RequestContext(request)) 
+    return res
 
 from forms import ProblemMetaForm
-from sdust_oj.constant import judge_flows
+from sdust_oj.constant import judge_flows, JUDGE_FLOW_MARK_SEPARATOR
 def meta_add(request):
     if request.method == 'POST':
         form = ProblemMetaForm(request.POST)
@@ -160,8 +170,10 @@ def meta_add(request):
         form = ProblemMetaForm()
         
     choices = [(f[0], f[1]) for f in judge_flows]
-    return render_to_response("problem/problem_meta_add.html", {
-        'form': form, "choices": choices}, context_instance=RequestContext(request)) 
+    data = {'form': form,
+            "choices": choices,
+            "sper_mark": JUDGE_FLOW_MARK_SEPARATOR}
+    return render_to_response("problem/problem_meta_add.html", data, context_instance=RequestContext(request)) 
     
 def form_upload(request,uploadForm):
     if request.method == 'POST':
@@ -234,3 +246,68 @@ def status(request, page=1):
     session.close()
     
     return res
+
+
+def meta_config_delete(request, deleteObjectClass, meta_id, object_id):
+    session = Session()
+    object_delete = session.query(deleteObjectClass).get(int(object_id))
+    if object_delete is None:
+        session.close()
+        raise Http404
+
+    session.delete(object_delete)
+    session.commit()
+    session.close()
+    return HttpResponseRedirect(reverse('meta_detail', kwargs={'meta_id': meta_id})) 
+
+def meta_config_detail(request, detailClass, object_id, template):
+    session = Session()
+    object_detail = session.query(detailClass).get(int(object_id))
+    
+    if object_detail is None:
+        session.close()
+        raise Http404
+    res = render_to_response(template, {"object_detail": object_detail},
+                             context_instance=RequestContext(request))
+    session.close()
+    
+    return res
+
+def meta_config_edit(request, configForm, editObjectClass, meta_id, object_id,
+                     template_name=None, redirect_to=None):
+    session = Session()
+    meta = session.query(ProblemMeta).get(meta_id)
+    if request.method == 'POST':
+        request.POST.update({"problem_meta_id":meta_id})
+        form = configForm(request.POST, request.FILES)
+        
+        if form.is_valid():
+            obj = form.save(meta_id=meta_id, update=True, object_id=object_id)
+            if redirect_to is None:
+                res = HttpResponseRedirect(reverse('meta_detail', kwargs={'meta_id': meta_id}))
+            else:
+                res = HttpResponseRedirect(reverse(redirect_to, kwargs={'id': obj.id}))
+            session.close()
+            return res
+    else:
+        session = Session()
+        object_detail = session.query(editObjectClass).get(int(object_id))
+        
+        if object_detail is None:
+            session.close()
+            raise Http404
+        
+        edit_object_class_attrs = [attr for attr in editObjectClass.__dict__ if attr[0] != '_']
+        initial_data = {}
+        
+        for attr in edit_object_class_attrs:
+            initial_data[attr] = getattr(object_detail,attr)
+        
+        form = configForm(initial=initial_data)
+    res = render_to_response(template_name, {
+            'form': form, "meta":meta},
+            context_instance=RequestContext(request))
+    session.close()
+    
+    return res 
+    

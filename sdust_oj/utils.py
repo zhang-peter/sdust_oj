@@ -31,9 +31,11 @@ def get_judge_flow_name(flow_with_sp):
     judge_id_strs = flow_with_sp.split(JUDGE_FLOW_MARK_SEPARATOR)
     judge_flow_str = []
     
-    for f in judge_flows:
-        if str(f[0]) in judge_id_strs:
-            judge_flow_str.append(f[1])
+    for judge_id in judge_id_strs:
+        for f in judge_flows:
+            if str(f[0]) == judge_id:
+                judge_flow_str.append(f[1])
+    
     return judge_flow_str
 
 from django.core.exceptions import ImproperlyConfigured

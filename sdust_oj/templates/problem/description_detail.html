@@ -1,0 +1,82 @@
+{% extends "base.html" %}
+
+{% block title %}{{ object_detail.id }} - {{ object_detail.title }}{% endblock %}
+{% block content %}
+    {% with object_detail as desc %}
+            <div>
+                <div class="ptt">
+                    {{ desc.title }}
+                </div>
+               
+                <div class="hiddable" id="vj_description" style="display: block; ">
+                    <p class="pst">
+                        描述
+                    </p>
+                    <div class="textBG">
+                        <div class="ptx" lang="zh-CN">
+                            {{ desc.content|safe }}
+                        </div>
+                    </div>
+                </div>
+               
+                <div class="hiddable" id="vj_input" style="display: block; ">
+                    <p class="pst">
+                        输入
+                    </p>
+                    <div class="textBG">
+                        <div class="ptx" lang="zh-CN">
+                            {{ desc.input }}
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="hiddable" id="vj_output" style="display: block; ">
+                    <p class="pst">
+                        输出
+                    </p>
+                    <div class="textBG">
+                        <div class="ptx" lang="zh-CN">
+                            {{ desc.output }}
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="hiddable" id="vj_sampleInput" style="display: block; ">
+                    <p class="pst">
+                        样例输入
+                    </p>
+                    <div class="textBG">
+                        <pre class="sio">{{ desc.sample_input }}</pre>
+                    </div>
+                </div>
+                
+                <div class="hiddable" id="vj_sampleOutput" style="display: block; ">
+                    <p class="pst">
+                        样例输出
+                    </p>
+                    <div class="textBG">
+                        <pre class="sio">{{ desc.sample_input }}</pre>
+                    </div>
+                </div>
+                
+                <div class="hiddable" id="vj_hint" style="display: block; ">
+                    <p class="pst">
+                        提示
+                    </p>
+                    <div class="textBG">
+                        <div class="ptx" lang="zh-CN">
+                            {{ desc.hint }}
+                        </div>
+                    </div>
+                </div>
+
+                <p class="pst">来源</p>
+                <div class="textBG">
+                    <div class="ptx" lang="zh-CN">
+                        {{ desc.source }}
+                    </div>
+                </div>
+
+            </div>
+    {% endwith %}
+{% endblock %}
