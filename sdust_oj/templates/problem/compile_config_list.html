@@ -13,10 +13,10 @@
                     {% for cc in compile_configs %}
                         <tr>
                             <td>{{ cc.id }}</td>
-                            <td>{{ cc.code_type }}</td>
+                            <td>{{ cc.get_code_type }}</td>
                             <td>{{ cc.config }}</td>
-                            <td><a href="">编辑</a></td>
-                            <td><a href="">删除</a></td>
+                            <td><a href="{% url compile_config_edit meta.id cc.id %}">编辑</a></td>
+                            <td><a href="{% url compile_config_delete meta.id cc.id %}">删除</a></td>
                         </tr>
                     {% endfor %}
                     </table>

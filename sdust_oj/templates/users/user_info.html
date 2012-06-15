@@ -1,0 +1,12 @@
+{% extends "base.html" %}
+
+    {% block title %}用户--{{ request.user.username }}{% endblock %}
+
+    {% block content %}
+        <div style="width:900px;MARGIN-RIGHT:auto;MARGIN-LEFT:auto;">
+            <span>{{ request.user.username }} {{ request.user.nickname }}</span>
+            <ul>
+                <li><a href="{% url password_change %}">修改密码</a></li>
+            </ul>
+        </div>
+    {% endblock %}

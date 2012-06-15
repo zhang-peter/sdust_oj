@@ -12,7 +12,7 @@
                         <tr>
                             <td><input type="checkbox" name="runtime_configs" value="{{ run_c.id }}" {% if run_c.id in runtime_configs_id %}checked="checked" {% endif %}/> </td>
                             <td>{{ run_c.id }}</td>
-                            <td>{{ run_c.code_type }}</td>
+                            <td>{{ run_c.get_code_type }}</td>
                             <td>{{ run_c.memory }}</td>
                             <td>{{ run_c.time }}
                         </tr>

@@ -105,6 +105,7 @@ class UserCreationForm(forms.Form):
         user = User()
         user.username = self.cleaned_data["username"]
         user.set_password(self.cleaned_data["password1"])
+        user.is_active = True
         session = Session()
         session.add(user)
         session.commit()
@@ -280,7 +281,10 @@ class SetPasswordForm(forms.Form):
     def save(self, commit=True):
         self.user.set_password(self.cleaned_data['new_password1'])
         if commit:
-            self.user.save()
+            session = Session()
+            session.query(User).filter_by(id=self.user.id).update({"password": self.user.password})
+            session.commit()
+            session.close()
         return self.user
 
 

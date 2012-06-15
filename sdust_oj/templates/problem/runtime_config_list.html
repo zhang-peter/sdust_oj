@@ -13,11 +13,11 @@
                     {% for run_c in runtime_configs %}
                         <tr>
                             <td>{{ run_c.id }}</td>
-                            <td>{{ run_c.code_type }}</td>
+                            <td>{{ run_c.get_code_type }}</td>
                             <td>{{ run_c.memory }}</td>
                             <td>{{ run_c.time }}
-                            <td><a href="">编辑</a></td>
-                            <td><a href="">删除</a></td>
+                            <td><a href="{% url runtime_config_edit meta.id run_c.id %}">编辑</a></td>
+                            <td><a href="{% url runtime_config_delete meta.id run_c.id %}">删除</a></td>
                         </tr>
                     {% endfor %}
                     </table>

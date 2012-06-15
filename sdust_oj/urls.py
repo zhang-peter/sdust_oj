@@ -9,6 +9,7 @@ urlpatterns = patterns('',
     # url(r'^sdust_oj/', include('sdust_oj.foo.urls')),
     url(r'^auth/', include('sdust_oj.auth.urls')),
     url(r'^problem/', include('sdust_oj.problem.urls')),
+    url(r'^users/', include('sdust_oj.users.urls')),
     url(r'^test/', test_view, name="test_view"),
     url(r'^admin/', include('sdust_oj.admin.urls')),
 )

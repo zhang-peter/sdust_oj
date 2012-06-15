@@ -4,7 +4,7 @@
 {% block content %}
             <div>
                     <div>
-                        Judge Flow: {% for flow_str in problem.get_judge_flow %} {{ flow_str }} {% endfor %}
+                        判定流程: {% for flow_str in problem.get_judge_flow %}{{ flow_str }}，{% endfor %}
                     </div>
                <form method="post" action = "" name = "problem_config_edit">
                {% csrf_token%}

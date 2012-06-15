@@ -2,6 +2,7 @@ from django import forms
 from sdust_oj.problem.models import CompilableCodeGenerationConfig, CompileConfig, Description,InputOutputData,\
     KeywordCheckConfig, OutputCheckConfig, Problem, ProblemMeta, RuntimeConfig,\
     Submission
+from sdust_oj.tables.auth import User
 from sdust_oj.sa_conn import Session
 from django.utils.translation import ugettext, ugettext_lazy as _
 
@@ -42,27 +43,31 @@ class CompileConfigForm(forms.Form):
         super(CompileConfigForm, self).__init__(*args, **kwargs)
         self.fields['code_type'].choices = [(c[0], c[1]) for c in code_types]
         
-    def save(self, commit=True, meta_id=None):
-        compile_config = CompileConfig() 
+    def save(self, commit=True, meta_id=None, update=False, object_id=None):
+        session = Session()
+        if update:
+            compile_config = session.query(CompileConfig).get(int(object_id))
+        else:
+            compile_config = CompileConfig() 
         compile_config.problem_meta_id = meta_id      
         compile_config.code_type = self.cleaned_data['code_type']
         compile_config.config = self.cleaned_data['config']        
         
-        session = Session()
-        session.add(compile_config)
+        if not update:
+            session.add(compile_config)
         session.commit()
         session.close()
         
-        return  compile_config
+        return compile_config
 
 class DescriptionForm(forms.Form):
     title = forms.CharField(label=_("title"), max_length = 254)    
-    content = forms.CharField(label=_("content"), max_length = 254)
-    input = forms.CharField(label=_("input"), max_length = 254)
-    output = forms.CharField(label=_("output"), max_length = 254)
-    sample_input = forms.CharField(label=_("sample_input"), max_length = 254) 
-    sample_output = forms.CharField(label=_("sample_output"), max_length = 254)    
-    hint = forms.CharField(label=_("hint"), max_length = 254)
+    content = forms.CharField(label=_("content"), max_length = 3000)
+    input = forms.CharField(label=_("input"), max_length = 1000)
+    output = forms.CharField(label=_("output"), max_length = 1000)
+    sample_input = forms.CharField(label=_("sample_input"), max_length = 1000) 
+    sample_output = forms.CharField(label=_("sample_output"), max_length = 1000)    
+    hint = forms.CharField(label=_("hint"), max_length = 1000)
     source = forms.CharField(label=_("source"), max_length = 254)   
 
     class Meta:
@@ -95,8 +100,8 @@ from sdust_oj.utils import save_io_file
 
 class InputOutputDataForm(forms.Form):   
     name = forms.CharField(label=_("name"), max_length = 254)
-    input_file = forms.FileField(label=_("input_file"), allow_empty_file=True)
-    output_file = forms.FileField(label=_("output_file"), allow_empty_file=True)
+    input_file = forms.FileField(label=_("input_file"), allow_empty_file=True, required=False)
+    output_file = forms.FileField(label=_("output_file"), allow_empty_file=True, required=False)
 
 
     class Meta:
@@ -111,21 +116,25 @@ class InputOutputDataForm(forms.Form):
         return self.check_file(output_file)
     
     def check_file(self, f):
-        if f.size > 1024 * 1024 * 50:
+        if f and f.size > 1024 * 1024 * 50:
             raise forms.ValidationError(_("File size should not be larger than 50MB!"))
         return f
         
-    def save(self, commit=True, meta_id=None):
-        input_output_data = InputOutputData() 
+    def save(self, commit=True, meta_id=None, update=False, object_id=None):
+        session = Session()
+        if update:
+            input_output_data = session.query(InputOutputData).get(int(object_id))
+        else:
+            input_output_data = InputOutputData() 
         input_output_data.problem_meta_id = meta_id   
         input_output_data.name = self.cleaned_data['name']
         input_file = self.cleaned_data['input_file']
         output_file = self.cleaned_data['output_file']
         
-        session = Session()
-        session.add(input_output_data)
+        if not update:
+            session.add(input_output_data)
         session.commit()        
-        save_io_file(input_file, output_file, input_output_data)
+        save_io_file(input_file, output_file, input_output_data, update)
         session.close()
         
         return input_output_data
@@ -161,13 +170,17 @@ class OutputCheckConfigForm(forms.Form):
     class Meta:
         model = OutputCheckConfig
         
-    def save(self, commit=True, meta_id=None):
-        output_check_config = OutputCheckConfig() 
+    def save(self, commit=True, meta_id=None, update=False, object_id=None):
+        session = Session()        
+        if update:
+            output_check_config = session.query(OutputCheckConfig).get(int(object_id))
+        else:
+            output_check_config = OutputCheckConfig() 
         output_check_config.problem_meta_id = meta_id
         output_check_config.check_method = self.cleaned_data['check_method']   
         
-        session = Session()
-        session.add(output_check_config)
+        if not update:
+            session.add(output_check_config)
         session.commit()
         session.close()
         
@@ -176,29 +189,31 @@ class OutputCheckConfigForm(forms.Form):
 from sdust_oj.constant import judge_flows, JUDGE_FLOW_MARK_SEPARATOR
 class ProblemMetaForm(forms.Form):
     title = forms.CharField(label=_('title'), max_length = 254)
-    judge_flow = forms.CharField(label=('judge_flow'), max_length = 254)
+    judge_flow = forms.MultipleChoiceField(label=_('judge_flow'), choices=())
+    
+    
+    def __init__(self, *args, **kwargs):
+        super(ProblemMetaForm, self).__init__(*args, **kwargs)
+        self.fields['judge_flow'].choices = [(f[0], f[1]) for f in judge_flows]
     
     class Meta:
         model = ProblemMeta
-        
-    def clean_judge_flow(self):
-        job_list = str(self.cleaned_data['judge_flow']).split(JUDGE_FLOW_MARK_SEPARATOR)
-        avail_marks = [f[0] for f in judge_flows]
-        for j in job_list:
-            if job_list.count(j) > 1 or (int(j) not in avail_marks):
-                raise forms.ValidationError(_("Illege Judge Flow!"))
-                break;
-        return self.cleaned_data['judge_flow']
-        
                 
-    def save(self, commit=True):
-        problem_meta = ProblemMeta()
-        problem_meta.title = self.cleaned_data['title']
-        job_list = self.cleaned_data['judge_flow']
-        problem_meta.judge_flow = job_list
+    def save(self, commit=True, update=False, meta_id=0):
         session = Session()
+        if update:
+            problem_meta = session.query(ProblemMeta).get(meta_id)
+        else:
+            problem_meta = ProblemMeta()
+            
+        problem_meta.title = self.cleaned_data['title']
+        job_list = ""
+        for job in self.cleaned_data['judge_flow']:
+            job_list += JUDGE_FLOW_MARK_SEPARATOR + job
+        problem_meta.judge_flow = job_list
         session.expire_on_commit = False
-        session.add(problem_meta)
+        if not update:
+            session.add(problem_meta)
         session.commit()
         session.close()
         
@@ -232,8 +247,12 @@ class ProblemForm(forms.Form):
         
         session.close()
          
-    def save(self, commit=True, meta_id=None):
-        problem = Problem()
+    def save(self, commit=True, meta_id=None, update=False, object_id=None):
+        session = Session()
+        if update:
+            problem = session.query(Problem).get(int(object_id))
+        else:
+            problem = Problem()
         problem.problem_meta_id = meta_id
         job_list = self.cleaned_data['judge_flow']
         flow_mark = ""
@@ -241,9 +260,9 @@ class ProblemForm(forms.Form):
             flow_mark += JUDGE_FLOW_MARK_SEPARATOR + str(job)
             
         problem.judge_flow = flow_mark
-        session = Session()
         session.expire_on_commit = False
-        session.add(problem)
+        if not update:
+            session.add(problem)
         session.commit()
         session.close()
         
@@ -262,15 +281,19 @@ class RuntimeConfigForm(forms.Form):
     class Meta:
         model = RuntimeConfig
         
-    def save(self, commit=True, meta_id=None):
-        run_config = RuntimeConfig() 
+    def save(self, commit=True, meta_id=None, update=False, object_id=None):
+        session = Session()
+        if update:
+            run_config = session.query(RuntimeConfig).get(int(object_id))
+        else:
+            run_config = RuntimeConfig() 
         run_config.problem_meta_id = meta_id
         run_config.code_type = self.cleaned_data['code_type'] 
         run_config.memory = self.cleaned_data['memory'] 
         run_config.time = self.cleaned_data['time']   
         
-        session = Session()
-        session.add(run_config)
+        if not update:
+            session.add(run_config)
         session.commit()
         session.close()
         
@@ -279,6 +302,7 @@ class RuntimeConfigForm(forms.Form):
 from sdust_oj.constant import code_types
 from django.http import settings
 import os
+from sdust_oj import status as STATUS  
 class SubmissionForm(forms.Form):
     code_type = forms.ChoiceField(label=_('Code Type'), choices=())
     code_text = forms.CharField(label=_('Code Text'), widget=forms.Textarea, required=False)
@@ -302,16 +326,21 @@ class SubmissionForm(forms.Form):
             raise forms.ValidationError(_("Only zip file is allowed!"))
         
         return f
-    
-    def save(self, problem=None):
+
+
+    def save(self, problem=None, user=None):
         if problem is None:
             return
         sub = Submission()
-        sub.status = 1
+        sub.status = STATUS.pending
         sub.problem_id = problem.id
         sub.code_type = self.cleaned_data["code_type"]
         sub.code = self.cleaned_data["code_text"]
+        sub.user = user
+        sub.length = len(sub.code)
         session = Session()
+        session.query(Problem).filter_by(id = problem.id).update({"submit": Problem.submit+1})
+        session.query(User).filter_by(id = user.id).update({"submit": User.submit+1})
         session.add(sub)
         session.commit()
         self.handle_code(sub, self.cleaned_data["code_file"])

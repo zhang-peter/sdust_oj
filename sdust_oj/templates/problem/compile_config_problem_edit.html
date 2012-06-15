@@ -12,7 +12,7 @@
                         <tr>
                             <td><input type="checkbox" name="compile_configs" value="{{ cc.id }}" {% if cc.id in compile_configs_id %}checked="checked" {% endif %}/> </td>
                             <td>{{ cc.id }}</td>
-                            <td>{{ cc.code_type }}</td>
+                            <td>{{ cc.get_code_type }}</td>
                             <td>{{ cc.config }}</td>
                         </tr>
                     {% endfor %}

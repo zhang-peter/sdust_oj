@@ -258,7 +258,7 @@ def password_change(request,
                     password_change_form=PasswordChangeForm,
                     current_app=None, extra_context=None):
     if post_change_redirect is None:
-        post_change_redirect = reverse('django.contrib.auth.views.password_change_done')
+        post_change_redirect = reverse('password_change_done')
     if request.method == "POST":
         form = password_change_form(user=request.user, data=request.POST)
         if form.is_valid():

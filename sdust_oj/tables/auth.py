@@ -50,7 +50,7 @@ userPermission = Table("userPermission", metadata,
 metadata.create_all() # if tables don't exit, create them.
 
 from sdust_oj.models.auth import User, Permission, Group
-from sdust_oj.models.problem import Submission
+from sdust_oj.tables.problem import Submission
 
 mapper(User, user, properties={
     "groups":relationship(Group, secondary=userGroup, backref="users"),

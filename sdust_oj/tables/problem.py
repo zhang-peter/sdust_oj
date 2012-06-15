@@ -86,7 +86,8 @@ submission = Table("Submission", metadata,
                    Column("used_time", Integer, nullable=False, default=0),
                    Column("user_id", Integer, ForeignKey('User.id')),
                    Column("code_type", Integer, nullable=False, default=0),
-                   Column("code", Text, nullable=False, default="")
+                   Column("code", Text, nullable=False, default=""),
+                   Column("length", Integer, nullable=False, default=0),
              )
 
 problemCCGC = Table("problemCCGC", metadata,
@@ -221,10 +222,35 @@ ProblemMeta.get_judge_flow = get_judge_flow
 ProblemMeta.get_display_config_list_template = get_display_config_list_template
 ProblemMeta.get_config_refer = get_config_refer
 
-from sdust_oj.constant import code_types
-def get_code_type(self):
-    for ct in code_types:
-        if ct[0] == int(self.code_type):
+from sdust_oj.constant import code_types as CT
+def get_code_type_name(code_type):
+    for ct in CT:
+        if ct[0] == code_type:
             return ct[1]
 
+def get_code_type(self):
+    return get_code_type_name(self.code_type)
+
 RuntimeConfig.get_code_type = get_code_type
+
+from django.http import settings
+
+import os
+def on_delete(self):
+    data_path = os.path.join(settings.JUDGE_ROOT, "data", str(self.problem_meta.id), "testdata")
+    input_path = os.path.join(data_path, "%d.in" % self.id)
+    if os.path.exists(input_path):
+       os.remove(input_path) 
+    output_path = os.path.join(data_path, "%d.out" % self.id)
+    if os.path.exists(output_path):
+       os.remove(output_path)
+  
+InputOutputData.on_delete = on_delete
+
+from sdust_oj import status as STATUS 
+def get_status_name(self):
+    return STATUS.STATUS_WORD[self.status]
+Submission.get_status_name = get_status_name
+Submission.get_code_type = get_code_type
+
+CompileConfig.get_code_type = get_code_type

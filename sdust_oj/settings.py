@@ -34,7 +34,7 @@ TIME_ZONE = 'Asia/Shanghai'
 
 # Language code for this installation. All choices can be found here:
 # http://www.i18nguy.com/unicode/language-identifiers.html
-LANGUAGE_CODE = 'zh-CN'
+LANGUAGE_CODE = 'zh_CN'
 
 SITE_ID = 1
 
@@ -161,3 +161,5 @@ AUTHENTICATION_BACKENDS = (
 METAS_PER_PAGE = 20
 
 JUDGE_ROOT = os.path.join(ROOT_PATH, "judge_root")
+LOGIN_REDIRECT_URL= "/problem/problem_list/1/"
+LOGIN_URL = "/auth/login/"

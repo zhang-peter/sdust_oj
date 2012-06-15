@@ -1,0 +1,123 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: PACKAGE VERSION\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2012-06-07 10:53+0800\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"Language: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=1; plural=0\n"
+
+#: forms.py:9 forms.py:35 forms.py:142 forms.py:265 forms.py:299
+msgid "Code Type"
+msgstr ""
+
+#: forms.py:10
+msgid "Generation method"
+msgstr ""
+
+#: forms.py:11
+msgid "requirement"
+msgstr ""
+
+#: forms.py:36
+msgid "config"
+msgstr ""
+
+#: forms.py:63 forms.py:190
+msgid "title"
+msgstr ""
+
+#: forms.py:64
+msgid "content"
+msgstr ""
+
+#: forms.py:65
+msgid "input"
+msgstr ""
+
+#: forms.py:66
+msgid "output"
+msgstr ""
+
+#: forms.py:67
+msgid "sample_input"
+msgstr ""
+
+#: forms.py:68
+msgid "sample_output"
+msgstr ""
+
+#: forms.py:69
+msgid "hint"
+msgstr ""
+
+#: forms.py:70
+msgid "source"
+msgstr ""
+
+#: forms.py:101
+msgid "name"
+msgstr ""
+
+#: forms.py:102
+msgid "input_file"
+msgstr ""
+
+#: forms.py:103
+msgid "output_file"
+msgstr ""
+
+#: forms.py:119
+msgid "File size should not be larger than 50MB!"
+msgstr ""
+
+#: forms.py:143
+msgid "word"
+msgstr ""
+
+#: forms.py:167
+msgid "check_method"
+msgstr ""
+
+#: forms.py:201
+msgid "Illege Judge Flow!"
+msgstr ""
+
+#: forms.py:220
+msgid "judge_flow"
+msgstr ""
+
+#: forms.py:266
+msgid "memory"
+msgstr ""
+
+#: forms.py:267
+msgid "time"
+msgstr ""
+
+#: forms.py:300
+msgid "Code Text"
+msgstr ""
+
+#: forms.py:301
+msgid "Code File"
+msgstr ""
+
+#: forms.py:316
+msgid "File size should not be larger than 1024KB!"
+msgstr ""
+
+#: forms.py:318
+msgid "Only zip file is allowed!"
+msgstr ""

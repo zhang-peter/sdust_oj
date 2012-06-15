@@ -4,16 +4,16 @@
 
             <div>
                     <div>
-                   <h1>Title: {{ meta.title }}</h1>
-                        Judge Flow: {% for flow_str in meta.get_judge_flow %} {{ flow_str }} {% endfor %}
+                   <h1>标题: {{ meta.title }}</h1>
+                        判定流程: {% for flow_str in meta.get_judge_flow %} {{ flow_str }} {% endfor %}
                     </div>
                     
                     <div>
-                       <a href="{% url problem_add meta.id %}">Make A Problem</a>
+                       <a href="{% url problem_add meta.id %}">派生题目</a>
                     </div>
 
                <div>
-                    <h2>Descriptions</h2>
+                    <h2>描述</h2>
                     <a href="{% url description_add meta.id %}">Add</a>
                     
                     <table>
@@ -35,7 +35,7 @@
                </div>
                
                <div>
-                    <h2>Input Output Data</h2>
+                    <h2>输入输出数据</h2>
                     <a href="{% url input_output_data_add meta.id %}">Add</a>
                     
                     <table>
@@ -49,8 +49,8 @@
                         <tr>
                             <td>{{ data.id }}</td>
                             <td><a href="">{{ data.name }}</a></td>
-                            <td><a href="">编辑</a></td>
-                            <td><a href="">删除</a></td>
+                            <td><a href="{% url io_data_edit meta.id data.id %}">编辑</a></td>
+                            <td><a href="{% url io_data_delete meta.id data.id %}">删除</a></td>
                         </tr>
                     {% endfor %}
                     </table>

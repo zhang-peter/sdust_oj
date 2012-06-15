@@ -1,0 +1,8 @@
+Traceback (most recent call last):
+  File "request.py", line 4, in <module>
+    handleCompiling()
+  File "/home/jingyong/workspace/sdust_oj/sdust_oj/judgeClient/compile.py", line 64, in handleCompiling
+    s = compile(src_path)
+  File "/home/jingyong/workspace/sdust_oj/sdust_oj/judgeClient/judge.py", line 201, in compile
+    os.waitpid(pid, 0)
+KeyboardInterrupt

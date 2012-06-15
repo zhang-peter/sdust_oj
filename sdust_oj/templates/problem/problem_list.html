@@ -15,7 +15,7 @@
                         <tr align="center">
                             <td>{{ p.id }}</td>
                             <td align="left">{% if p.description %}<a href="{% url problem_detail p.id %}">{{ p.description.title }}</a>{% else %}题目没有描述{% endif %}</td>
-                            <td>{{ p.get_ac_ratio }}%({{ p.submit }}/{{ p.accept }})</td>
+                            <td>{{ p.get_ac_ratio }}%({{ p.accept }}/{{ p.submit }})</td>
                         </tr>
                     {% endfor %}
                     </table>

@@ -1,0 +1,14 @@
+#!/usr/bin/python
+# encoding=utf8
+pending = 11
+keyword_checking = 12
+compiling = 13
+running = 14
+
+keyword_checked_error = 21
+compiled_error = 22
+runtime_error = 23
+memory_over_error = 24
+presentation_error = 25
+
+fetched = 0

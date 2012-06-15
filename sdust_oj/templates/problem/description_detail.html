@@ -25,7 +25,7 @@
                     </p>
                     <div class="textBG">
                         <div class="ptx" lang="zh-CN">
-                            {{ desc.input }}
+                            {{ desc.input|safe }}
                         </div>
                     </div>
                 </div>
@@ -36,7 +36,7 @@
                     </p>
                     <div class="textBG">
                         <div class="ptx" lang="zh-CN">
-                            {{ desc.output }}
+                            {{ desc.output|safe }}
                         </div>
                     </div>
                 </div>
@@ -65,7 +65,7 @@
                     </p>
                     <div class="textBG">
                         <div class="ptx" lang="zh-CN">
-                            {{ desc.hint }}
+                            {{ desc.hint|safe }}
                         </div>
                     </div>
                 </div>
@@ -73,7 +73,7 @@
                 <p class="pst">来源</p>
                 <div class="textBG">
                     <div class="ptx" lang="zh-CN">
-                        {{ desc.source }}
+                        {{ desc.source|safe }}
                     </div>
                 </div>
 

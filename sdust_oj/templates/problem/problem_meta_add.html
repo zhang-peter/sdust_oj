@@ -1,10 +1,5 @@
 {% extends "base.html" %}
 
-{% block metas %}
-    <script type="text/javascript" src="{{ STATIC_URL }}js/jquery.min.js"></script>
-    <script type="text/javascript" src="{{ STATIC_URL }}js/jquery.dragsort-0.5.1.min.js"></script>
-{% endblock %}
-
 {% block title %}添加题元{% endblock %}
 
 {% block content %}
@@ -23,37 +18,16 @@
                             <tr>
                                 <td>判定选择：</td>
                                 <td>
-                                    可选判定：
-                                    <ul id="avail_list">
-                                    {% for choice in choices %}
-                                        <li value="{{ choice.0 }}"><div>{{ choice.1 }}</div></li>
-                                    {% endfor %}
-                                    </ul>
-                                    
-                                    判定及顺序：
-                                    <ul id="choice_list">
-                                        
-                                    </ul>
+                                    {{ form.judge_flow }}
                                 </td>
                             </tr>
                         </tbody>
                     </table>
                     <br>
-                    <input type="hidden" name="judge_flow" value="" />
                     <input style="float:left" class="bnt1" type="submit" id="submit" value="提交">
                     <input style="margin-left:20px;float:left" class="bnt1" type="button" value="返回" onclick="history.go(-1)">
                 </form>
-                
-                <script type="text/javascript">
-                    $("#avail_list, #choice_list").dragsort({ dragSelector: "div", dragBetween: true, dragEnd: saveOrder, placeHolderTemplate: "<li class='placeHolder'><div></div></li>" });
-                    
-                    function saveOrder() {
-                        var data = $("#choice_list li").map(function() { return $(this).attr("value") }).get();
-                        $("input[name=judge_flow]").val(data.join("{{ sper_mark }}"));
-                    };
-                </script>
-
-                
+            
            </div>
 
 {% endblock %}

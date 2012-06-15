@@ -2,6 +2,10 @@
             {% block title %}
                 状态列表
             {% endblock %}
+            
+            {% block metas %}
+                <meta http-equiv="refresh" content="3">
+            {% endblock %}
 
             {% block content %}
                 <div>
@@ -20,13 +24,15 @@
                 {% for sub in subs %}
                     <tr align="center">
                         <td>{{ sub.id }}</td>
-                        <td>{{ sub.user }}</td>
+                        <td>{{ sub.user.username }}</td>
                         <td>{{ sub.problem.id }}</td>
-                        <td>{{ sub.status }}</td>
-                        <td>{{ sub.memory }}</td>
-                        <td>{{ sub.time }}</td>
-                        <td>{{ sub.code_type }}</td>
-                        <td>{{ sub.sub_time }}</td>
+                        <td>{{ sub.get_status_name }}</td>
+                        <td>{{ sub.used_memory }}</td>
+                        
+                        <td>{{ sub.used_time }}</td>
+                        <td>{{ sub.get_code_type }}</td>
+                        <td>{{ sub.length }}</td>
+                        <td>{{ sub.sub_time|date:"Y-m-d" }} {{ sub.sub_time|time:"H:i:s" }}</td>
                     </tr>
                 {% endfor %}
                     </table>

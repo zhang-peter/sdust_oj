@@ -23,7 +23,8 @@ def meta_list(request, page=1):
          metas = paginator.page(metas_all)
     except (EmptyPage, InvalidPage):
         metas = paginator.page(paginator.num_pages)
-    return render_to_response('problem/meta_list.html', {"metas": metas})
+    return render_to_response('problem/meta_list.html', {"metas": metas},
+                              context_instance=RequestContext(request))
 
 def meta_detail(request, meta_id):
     session = Session()
@@ -45,6 +46,15 @@ def meta_detail(request, meta_id):
     
     return render_to_response('problem/meta_detail.html', data,
                              context_instance=RequestContext(request))
+
+def meta_delete(request, meta_id):
+    session = Session()
+    meta = session.query(ProblemMeta).get(int(meta_id))
+    session.delete(meta)
+    session.commit()
+    session.close()
+
+    return HttpResponseRedirect(reverse('meta_list', kwargs={'page': 1})) 
 
 def submit_success(request):
     return render_to_response('problem/submit_success.html')
@@ -133,30 +143,6 @@ def problem_config_edit(request, id):
         
         return render_to_response("problem/problem_config_edit.html", data, context_instance=RequestContext(request)) 
 
-def meta_config_add(request, meta_id, configForm, template_name=None,
-                    redirect_to=None):
-    session = Session()
-    meta = session.query(ProblemMeta).get(meta_id)
-    if request.method == 'POST':
-        request.POST.update({"problem_meta_id":meta_id})
-        form = configForm(request.POST, request.FILES)
-        
-        if form.is_valid():
-            obj = form.save(meta_id=meta_id)
-            if redirect_to is None:
-                res = HttpResponseRedirect(reverse('meta_detail', kwargs={'meta_id': meta_id}))
-            else:
-                res = HttpResponseRedirect(reverse(redirect_to, kwargs={'id': obj.id}))
-            session.close()
-            return res    
-        
-    form = configForm(initial={'problem_meta_id': meta_id})
-    res = render_to_response(template_name, {
-            'form': form, "meta":meta},
-            context_instance=RequestContext(request))
-    session.close()
-    
-    return res
 
 from forms import ProblemMetaForm
 from sdust_oj.constant import judge_flows, JUDGE_FLOW_MARK_SEPARATOR
@@ -169,12 +155,25 @@ def meta_add(request):
     else:
         form = ProblemMetaForm()
         
-    choices = [(f[0], f[1]) for f in judge_flows]
-    data = {'form': form,
-            "choices": choices,
-            "sper_mark": JUDGE_FLOW_MARK_SEPARATOR}
+    data = {'form': form}
     return render_to_response("problem/problem_meta_add.html", data, context_instance=RequestContext(request)) 
     
+def meta_edit(request, meta_id):
+    session = Session()
+    meta = session.query(ProblemMeta).get(meta_id)
+    if meta is None:
+        session.close()
+        raise Http404
+    if request.method == "POST":
+        form = ProblemMetaForm(request.POST)
+        if form.is_valid():
+            meta = form.save(update=True, meta_id=meta_id)
+            return HttpResponseRedirect(reverse('meta_detail', kwargs={'meta_id': meta.id}))
+    else:
+        form = ProblemMetaForm(initial={"title":meta.title, "judge_flow":meta.judge_flow})
+   
+    data = {'form': form}
+    return render_to_response("problem/problem_meta_edit.html", data, context_instance=RequestContext(request)) 
 def form_upload(request,uploadForm):
     if request.method == 'POST':
         form = uploadForm(request.POST)
@@ -205,6 +204,22 @@ def problem_list(request, page=1):
     
     return res
 
+def problem_list_admin(request, page=1):
+    session = Session()
+    prob_all = session.query(Problem).all()
+    
+    paginator = Paginator(prob_all, settings.METAS_PER_PAGE)
+    
+    try:
+         probs = paginator.page(prob_all)
+    except (EmptyPage, InvalidPage):
+        probs = paginator.page(paginator.num_pages)
+    res = render_to_response('problem/problem_list_admin.html', {"probs": probs},
+                             context_instance=RequestContext(request))
+    session.close()
+    
+    return res
+
 def problem_detail(request, prob_id):
     session = Session()
     prob = session.query(Problem).get(int(prob_id))
@@ -223,7 +238,8 @@ def submit(request, prob_id):
     if request.method == "POST":
         form = SubmissionForm(request.POST, request.FILES)
         if form.is_valid():
-            form.save(problem=prob)
+            form.save(problem=prob, user=request.user)
+            return HttpResponseRedirect(reverse('status', kwargs={'page': 1}))
     else:
         form = SubmissionForm()
     res = render_to_response('problem/submit.html', {"prob": prob, "form": form},
@@ -231,11 +247,12 @@ def submit(request, prob_id):
     session.close()
     return res
 
+from sqlalchemy import desc
 def status(request, page=1):
     session = Session()
-    sub_all = session.query(Submission).all()
+    sub_all = session.query(Submission).order_by(Submission.sub_time.desc())
     
-    paginator = Paginator(sub_all, settings.METAS_PER_PAGE)
+    paginator = Paginator(sub_all, 100)#settings.METAS_PER_PAGE)
     
     try:
          subs = paginator.page(sub_all)
@@ -254,7 +271,10 @@ def meta_config_delete(request, deleteObjectClass, meta_id, object_id):
     if object_delete is None:
         session.close()
         raise Http404
-
+    
+    if hasattr(object_delete, "on_delete"):
+        object_delete.on_delete()
+        
     session.delete(object_delete)
     session.commit()
     session.close()
@@ -269,6 +289,31 @@ def meta_config_detail(request, detailClass, object_id, template):
         raise Http404
     res = render_to_response(template, {"object_detail": object_detail},
                              context_instance=RequestContext(request))
+    session.close()
+    
+    return res
+
+def meta_config_add(request, meta_id, configForm, template_name=None,
+                    redirect_to=None):
+    session = Session()
+    meta = session.query(ProblemMeta).get(meta_id)
+    if request.method == 'POST':
+        request.POST.update({"problem_meta_id":meta_id})
+        form = configForm(request.POST, request.FILES)
+        
+        if form.is_valid():
+            obj = form.save(meta_id=meta_id)
+            if redirect_to is None:
+                res = HttpResponseRedirect(reverse('meta_detail', kwargs={'meta_id': meta_id}))
+            else:
+                res = HttpResponseRedirect(reverse(redirect_to, kwargs={'id': obj.id}))
+            session.close()
+            return res    
+        
+    form = configForm(initial={'problem_meta_id': meta_id})
+    res = render_to_response(template_name, {
+            'form': form, "meta":meta},
+            context_instance=RequestContext(request))
     session.close()
     
     return res

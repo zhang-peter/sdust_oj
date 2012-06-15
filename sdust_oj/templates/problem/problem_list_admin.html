@@ -1,0 +1,31 @@
+{% extends "base.html" %}
+            {% block title %}
+                题目列表
+            {% endblock %}
+
+            {% block content %}
+                <div>
+                    <table cellSpacing="0" cellPadding="0" width="100%" border="1" class="a" bordercolor="#FFFFFF">
+                        <tr class="in">
+                            <td>编号</td>
+                            <td>标题</td>
+                            <td>题元</td>
+                            <td>通过率（通过／提交）</td>
+                            <td></td>
+                            <td></td>                           
+                            <td></td>
+                        </tr>
+                    {% for p in probs %}
+                        <tr align="center">
+                            <td>{{ p.id }}</td>
+                            <td align="left">{% if p.description %}<a href="{% url problem_detail p.id %}">{{ p.description.title }}</a>{% else %}题目没有描述{% endif %}</td>
+                            <td><a href="{% url meta_detail p.problem_meta.id %}">{{ p.problem_meta.title }}</a></td>
+                            <td>{{ p.get_ac_ratio }}%({{ p.submit }}/{{ p.accept }})</td>
+                            <td><a href="{% url problem_edit p.problem_meta.id p.id %}">编辑</a></td>
+                            <td><a href="{% url problem_config_edit p.id %}">编辑流程数据</a></td>                            
+                            <td><a href="{% url problem_delete p.problem_meta.id p.id %}">删除</a></td>                           
+                        </tr>
+                    {% endfor %}
+                    </table>
+                </div>
+            {% endblock %}

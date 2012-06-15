@@ -17,7 +17,15 @@
                     <td><a href="{% url status 1 %}">状态</a></td>
                     <td><a href="">竞赛</a></td>
                     <td><a class="register" href="{% url register %}">注册</a></td>
+                    {% if request.user.is_authenticated %}
+                    <td><a href="{% url user_info %}">{{ request.user.username }}</a></td>
+                    <td><a class="logout" href="{% url logout %}?next={{ request.get_full_path }}">退出</a></td>
+                    {% else %}
                     <td><a class="login" href="{% url login %}">登录</a></td>
+                    {% endif %}
+                    {% if request.user.is_superuser %}
+                    <td><a href="{% url problem_index %}">管理</a></td>
+                    {% endif %}
                 </tr>
             </tbody>
         </table>
@@ -31,7 +39,7 @@
             <hr>
             <a href="mailto:Liyong_zhang@yeah.com">Contact</a> | <a href="https://github.com/SkyPitt/sdust_oj" target="_blank">Open Source Project</a>
             <br>
-            Server Time: <span class="currentTime">2012-05-14 10:09:25</span>
+            服务器时间: <span class="currentTime">{% now "Y-m-d H:i:s" %}</span>
         </div>
     </body>
 </html>

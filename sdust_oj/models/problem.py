@@ -90,7 +90,7 @@ from datetime import datetime
 class Submission(object):
 
     def __init__(self, status=0, sub_time=datetime.now(), used_memory=0, used_time=0,
-                 user_id=None, problem_id=None, code_type=0, code=""):
+                 user_id=None, problem_id=None, code_type=0, code="", length=0):
         self.status = status
         self.sub_time = sub_time
         self.used_memory = used_memory
@@ -99,3 +99,4 @@ class Submission(object):
         self.problem_id = problem_id
         self.code_type = code_type
         self.code = code
+        self.length = length

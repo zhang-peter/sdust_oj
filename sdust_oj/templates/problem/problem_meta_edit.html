@@ -1,0 +1,33 @@
+{% extends "base.html" %}
+
+{% block title %}添加题元{% endblock %}
+
+{% block content %}
+
+            <div style="width:800px;MARGIN-RIGHT:auto;MARGIN-LEFT:auto;">
+                <form id="form" name="submit" action="" method="POST">
+                    {% csrf_token%}
+                    <table>
+                        <tbody>
+                            <tr>
+                                <td>标题：</td>
+                                <td>
+                                    {{ form.title }}
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>判定选择：</td>
+                                <td>
+                                    {{ form.judge_flow }}
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                    <br>
+                    <input style="float:left" class="bnt1" type="submit" id="submit" value="提交">
+                    <input style="margin-left:20px;float:left" class="bnt1" type="button" value="返回" onclick="history.go(-1)">
+                </form>
+                
+           </div>
+
+{% endblock %}
